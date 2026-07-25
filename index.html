@@ -309,12 +309,12 @@ header{
 .docs-dots-mac i{width:9px;height:9px;border-radius:50%;background:#D7DED5;display:block;}
 .docs-filename{font-family:var(--font-mono);font-size:12px;color:var(--text-mute);}
 .docs-tag-live{margin-left:auto;font-family:var(--font-mono);font-size:11px;font-weight:600;color:var(--green-2);background:rgba(52,211,153,.14);padding:4px 12px;border-radius:20px;letter-spacing:.03em;}
-.docs-frame{position:relative;flex:1;min-height:460px;padding:34px;}
-@media(max-width:640px){.docs-frame{min-height:340px;padding:20px;}}
-.docs-slide{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:34px;opacity:0;transform:scale(.96) translateY(10px);transition:opacity .65s var(--ease), transform .65s var(--ease);pointer-events:none;}
-@media(max-width:640px){.docs-slide{padding:20px;}}
-.docs-slide.active{opacity:1;transform:scale(1) translateY(0);pointer-events:auto;position:relative;}
-.docs-slide img{max-width:100%;max-height:560px;width:auto;height:auto;object-fit:contain;filter:drop-shadow(0 30px 50px rgba(10,30,22,.28));border-radius:4px;}
+.docs-frame{position:relative;width:100%;aspect-ratio:5/4;}
+@media(max-width:640px){.docs-frame{aspect-ratio:3/4;}}
+.docs-slide{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:28px;opacity:0;transform:scale(.97);transition:opacity .65s var(--ease), transform .65s var(--ease);pointer-events:none;}
+@media(max-width:640px){.docs-slide{padding:16px;}}
+.docs-slide.active{opacity:1;transform:scale(1);pointer-events:auto;}
+.docs-slide img{max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;filter:drop-shadow(0 30px 50px rgba(10,30,22,.28));border-radius:4px;}
 
 .docs-thumbs{display:flex;gap:14px;margin-top:22px;flex-wrap:wrap;}
 .docs-thumb{
@@ -561,9 +561,7 @@ footer{background:var(--ink);color:rgba(255,255,255,.65);padding:80px 0 30px;}
   .avis-card{width:280px;padding:24px;}
 
   .docs-toolbar{gap:10px;padding:12px 16px;}
-  .docs-frame{padding:18px;}
-  .docs-slide{padding:18px;}
-  .docs-slide img{max-height:380px;}
+  .docs-slide{padding:16px;}
 
   .trial-banner{flex-direction:column;align-items:stretch;}
   .trial-banner .l{align-items:flex-start;}
@@ -591,8 +589,7 @@ footer{background:var(--ink);color:rgba(255,255,255,.65);padding:80px 0 30px;}
 
   .docs-filename{display:none;}
   .docs-toolbar{gap:8px;}
-  .docs-slide img{max-height:300px;}
-  .docs-frame{min-height:280px;}
+  .docs-frame{aspect-ratio:3/4.4;}
 
   .avis-card{width:250px;padding:20px;}
   .avis-card p{font-size:14px;}
