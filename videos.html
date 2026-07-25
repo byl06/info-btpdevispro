@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tutoriels vidéo — BTP Devis Pro</title>
+<meta name="description" content="Tous les tutoriels vidéo de BTP Devis Pro : prise en main, devis, facturation normalisée DGI, chantiers et paramètres.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============ TOKENS (matches main site) ============ */
+:root{
+  --paper:#F5F7F3; --paper-2:#ECF1EA;
+  --ink:#0A1712; --ink-2:#122019; --ink-3:#18271F;
+  --green:#0E4432; --green-2:#146449;
+  --bright:#34D399; --bright-2:#8FF0C2;
+  --line:#DEE6DD; --line-soft:#E7ECE5;
+  --text:#0F1E17; --text-soft:#526257; --text-mute:#7C8A80;
+  --white:#FFFFFF;
+  --radius-s:10px; --radius-m:18px; --radius-l:28px;
+  --ease:cubic-bezier(.22,1,.36,1);
+  --font-display:'Poppins',sans-serif; --font-body:'Inter',sans-serif; --font-mono:'JetBrains Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto;}*{animation-duration:0.01ms !important;animation-iteration-count:1 !important;transition-duration:0.01ms !important;}}
+body{font-family:var(--font-body);background:var(--paper);color:var(--text);line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden;}
+img{max-width:100%;display:block;}
+a{color:inherit;text-decoration:none;}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;}
+ul{list-style:none;}
+:focus-visible{outline:2px solid var(--bright);outline-offset:3px;border-radius:4px;}
+.wrap{max-width:1220px;margin:0 auto;padding:0 32px;}
+@media(max-width:640px){.wrap{padding:0 20px;}}
+
+.eyebrow{font-family:var(--font-mono);font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--green-2);display:inline-flex;align-items:center;gap:9px;font-weight:500;}
+.eyebrow::before{content:'';width:16px;height:1px;background:var(--bright);display:inline-block;}
+.section-head{max-width:640px;margin-bottom:44px;}
+.section-head h2{font-family:var(--font-display);font-weight:700;font-size:clamp(28px,3.6vw,40px);line-height:1.14;letter-spacing:-.02em;margin-top:14px;}
+.section-head p{margin-top:14px;color:var(--text-soft);font-size:16.5px;line-height:1.6;}
+
+.grid-bg{background-image:linear-gradient(var(--line-soft) 1px, transparent 1px),linear-gradient(90deg, var(--line-soft) 1px, transparent 1px);background-size:44px 44px;}
+
+.bracket{position:relative;}
+.bracket::before,.bracket::after{content:'';position:absolute;width:16px;height:16px;border:1.5px solid var(--bright);opacity:0;transition:opacity .35s var(--ease), transform .35s var(--ease);}
+.bracket::before{top:-1px;left:-1px;border-right:none;border-bottom:none;transform:translate(4px,4px);}
+.bracket::after{bottom:-1px;right:-1px;border-left:none;border-top:none;transform:translate(-4px,-4px);}
+.bracket:hover::before,.bracket:hover::after,.bracket.in-view::before,.bracket.in-view::after{opacity:.9;transform:translate(0,0);}
+
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .8s var(--ease), transform .8s var(--ease);}
+.reveal.in-view{opacity:1;transform:translateY(0);}
+.reveal-stagger>*{opacity:0;transform:translateY(22px);transition:opacity .6s var(--ease), transform .6s var(--ease);}
+.reveal-stagger.in-view>*{opacity:1;transform:translateY(0);}
+.reveal-stagger.in-view>*:nth-child(1){transition-delay:.02s;} .reveal-stagger.in-view>*:nth-child(2){transition-delay:.07s;}
+.reveal-stagger.in-view>*:nth-child(3){transition-delay:.12s;} .reveal-stagger.in-view>*:nth-child(4){transition-delay:.17s;}
+.reveal-stagger.in-view>*:nth-child(5){transition-delay:.22s;} .reveal-stagger.in-view>*:nth-child(6){transition-delay:.27s;}
+.reveal-stagger.in-view>*:nth-child(7){transition-delay:.32s;} .reveal-stagger.in-view>*:nth-child(8){transition-delay:.37s;}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;padding:15px 26px;border-radius:100px;font-weight:600;font-size:15px;transition:transform .35s var(--ease), box-shadow .35s var(--ease), background .3s ease, border-color .3s ease;white-space:nowrap;}
+.btn-primary{background:linear-gradient(135deg,var(--bright),#22B885);color:#08281D;box-shadow:0 8px 24px -8px rgba(52,211,153,.55);}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 14px 32px -10px rgba(52,211,153,.65);}
+.btn-ghost{border:1.5px solid var(--line);color:var(--text);background:rgba(255,255,255,.5);}
+.btn-ghost:hover{border-color:var(--green-2);transform:translateY(-2px);}
+.btn-sm{padding:11px 20px;font-size:13.5px;}
+.btn svg{width:16px;height:16px;}
+
+/* ============ HEADER (shared) ============ */
+header{position:fixed;top:0;left:0;right:0;z-index:100;padding:16px 0;}
+.nav-inner{max-width:1220px;margin:0 auto;padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:64px;border-radius:100px;background:rgba(245,247,243,.72);backdrop-filter:blur(16px) saturate(160%);-webkit-backdrop-filter:blur(16px) saturate(160%);border:1px solid rgba(255,255,255,.6);box-shadow:0 8px 30px -14px rgba(10,23,18,.15);transition:box-shadow .3s ease;}
+@media(max-width:640px){.nav-inner{padding:0 16px;}}
+.logo{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-weight:700;font-size:16.5px;letter-spacing:-.01em;}
+.logo-mark{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--green),var(--green-2));display:flex;align-items:center;justify-content:center;color:var(--bright-2);flex-shrink:0;}
+.logo-mark svg{width:18px;height:18px;}
+.nav-links{display:flex;align-items:center;gap:34px;font-size:14.5px;font-weight:500;color:var(--text-soft);}
+.nav-links a{position:relative;padding:4px 0;transition:color .25s ease;}
+.nav-links a::after{content:'';position:absolute;left:0;bottom:0;width:0;height:1.5px;background:var(--bright);transition:width .3s var(--ease);}
+.nav-links a:hover{color:var(--text);}
+.nav-links a:hover::after{width:100%;}
+.nav-links a.current{color:var(--text);}
+.nav-links a.current::after{width:100%;}
+.nav-cta{display:flex;align-items:center;gap:12px;}
+.nav-login{font-size:14.5px;font-weight:600;color:var(--text-soft);padding:10px 6px;}
+.nav-login:hover{color:var(--text);}
+.burger{display:none;width:38px;height:38px;border-radius:50%;align-items:center;justify-content:center;}
+.burger span{display:block;width:18px;height:1.5px;background:var(--text);position:relative;transition:background .2s;}
+.burger span::before,.burger span::after{content:'';position:absolute;left:0;width:18px;height:1.5px;background:var(--text);transition:transform .3s var(--ease);}
+.burger span::before{top:-6px;}.burger span::after{top:6px;}
+.burger.open span{background:transparent;}
+.burger.open span::before{transform:translateY(6px) rotate(45deg);}
+.burger.open span::after{transform:translateY(-6px) rotate(-45deg);}
+@media(max-width:900px){.nav-links{display:none;}.nav-login{display:none;}.burger{display:flex;}}
+.mobile-menu{position:fixed;inset:0;background:var(--ink);z-index:99;display:flex;flex-direction:column;justify-content:center;padding:32px;transform:translateY(-100%);transition:transform .5s var(--ease);}
+.mobile-menu.open{transform:translateY(0);}
+.mobile-menu a{color:var(--white);font-family:var(--font-display);font-size:28px;font-weight:600;padding:14px 0;border-bottom:1px solid rgba(255,255,255,.1);}
+.mobile-menu .btn{margin-top:26px;width:100%;}
+
+/* ============ HERO ============ */
+.thero{padding:160px 0 80px;position:relative;overflow:hidden;}
+.thero::before{content:'';position:absolute;top:-200px;left:-160px;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(52,211,153,.24),transparent 68%);pointer-events:none;}
+.thero-inner{max-width:680px;position:relative;}
+.thero h1{font-family:var(--font-display);font-weight:700;letter-spacing:-.03em;font-size:clamp(34px,4.6vw,52px);line-height:1.08;margin-top:18px;}
+.thero p{margin-top:18px;font-size:17.5px;color:var(--text-soft);max-width:520px;line-height:1.65;}
+.thero-stats{display:flex;gap:36px;margin-top:34px;flex-wrap:wrap;}
+.thero-stats .s b{font-family:var(--font-display);font-weight:700;font-size:24px;color:var(--green);display:block;}
+.thero-stats .s span{font-family:var(--font-mono);font-size:11.5px;color:var(--text-mute);letter-spacing:.04em;}
+
+.search-wrap{margin-top:36px;position:relative;max-width:460px;}
+.search-wrap input{
+  width:100%;padding:15px 20px 15px 46px;border-radius:100px;border:1.5px solid var(--line);
+  background:var(--white);font-family:var(--font-body);font-size:14.5px;color:var(--text);
+  transition:border-color .3s ease, box-shadow .3s ease;
+}
+.search-wrap input:focus{outline:none;border-color:var(--green-2);box-shadow:0 0 0 4px rgba(52,211,153,.14);}
+.search-wrap svg{position:absolute;left:18px;top:50%;transform:translateY(-50%);width:17px;height:17px;color:var(--text-mute);}
+
+/* ============ FEATURED VIDEO ============ */
+.featured{padding:20px 0 90px;}
+.featured-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:56px;align-items:center;}
+@media(max-width:980px){.featured-grid{grid-template-columns:1fr;}}
+.laptop{position:relative;}
+.laptop-frame{background:var(--ink);border-radius:20px 20px 6px 6px;padding:14px 14px 40px;box-shadow:0 50px 90px -30px rgba(10,30,22,.4);}
+.laptop-notch{position:absolute;top:14px;left:50%;transform:translateX(-50%);width:80px;height:14px;background:var(--ink);border-radius:0 0 10px 10px;z-index:2;}
+.laptop-screen{aspect-ratio:16/10;border-radius:8px;overflow:hidden;position:relative;background:linear-gradient(150deg,var(--green) 0%, var(--ink-3) 70%);}
+.laptop-base{height:12px;background:linear-gradient(var(--ink-2),var(--ink));border-radius:0 0 10px 10px;margin-top:-1px;position:relative;}
+.laptop-base::after{content:'';position:absolute;left:50%;top:0;transform:translateX(-50%);width:90px;height:5px;background:rgba(0,0,0,.35);border-radius:0 0 6px 6px;}
+.f-scene{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;color:var(--white);text-align:center;padding:20px;}
+.f-play{width:70px;height:70px;border-radius:50%;background:rgba(255,255,255,.14);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,.35);transition:transform .35s var(--ease), background .3s ease;}
+.f-play:hover{transform:scale(1.08);background:rgba(255,255,255,.22);}
+.f-play svg{width:24px;height:24px;color:var(--white);margin-left:3px;}
+.f-scene .len{font-family:var(--font-mono);font-size:12px;color:rgba(255,255,255,.65);letter-spacing:.05em;}
+.f-scene.playing .f-play{display:none;}
+.f-tour{display:none;position:absolute;inset:0;}
+.f-scene.playing + .f-tour{display:block;}
+.tour-frame{position:absolute;inset:0;opacity:0;transition:opacity .6s ease;padding:22px;display:flex;flex-direction:column;justify-content:center;gap:10px;}
+.tour-frame.active{opacity:1;}
+.tour-frame .tf-label{font-family:var(--font-mono);font-size:11px;color:var(--bright-2);letter-spacing:.08em;text-transform:uppercase;}
+.tour-frame .tf-title{font-family:var(--font-display);font-weight:600;font-size:18px;color:var(--white);}
+.tour-bar{height:8px;border-radius:4px;background:rgba(255,255,255,.12);overflow:hidden;margin-top:6px;}
+.tour-bar i{display:block;height:100%;background:var(--bright);width:0%;border-radius:4px;}
+.tour-frame.active .tour-bar i{transition:width 2.6s linear;width:100%;}
+.tour-rows{display:flex;flex-direction:column;gap:8px;margin-top:6px;}
+.tour-rows span{height:9px;border-radius:4px;background:rgba(255,255,255,.14);}
+.tour-rows span:nth-child(1){width:88%;} .tour-rows span:nth-child(2){width:64%;} .tour-rows span:nth-child(3){width:76%;}
+.f-progress{display:flex;gap:6px;position:absolute;bottom:14px;left:22px;right:22px;}
+.f-progress i{flex:1;height:3px;border-radius:2px;background:rgba(255,255,255,.18);}
+.f-progress i.active{background:var(--bright);}
+
+.demo-video-wrap{background:#282828;border-radius:20px;overflow:hidden;box-shadow:0 50px 90px -30px rgba(10,30,22,.4);}
+.demo-video{width:100%;display:block;aspect-ratio:16/10;object-fit:contain;background:#282828;}
+
+.featured-copy .badge{display:inline-flex;align-items:center;gap:8px;background:rgba(52,211,153,.14);color:var(--green-2);font-family:var(--font-mono);font-size:11.5px;font-weight:600;padding:6px 14px;border-radius:20px;letter-spacing:.04em;}
+.featured-copy h3{font-family:var(--font-display);font-weight:700;font-size:clamp(24px,3vw,30px);margin-top:16px;letter-spacing:-.02em;}
+.featured-copy p{margin-top:12px;color:var(--text-soft);font-size:15.5px;line-height:1.65;max-width:420px;}
+.featured-copy .flen{font-family:var(--font-mono);font-size:13px;color:var(--text-mute);margin-top:16px;display:flex;align-items:center;gap:8px;}
+.featured-copy .flen svg{width:14px;height:14px;}
+
+/* ============ FILTER TABS ============ */
+.filters{padding:0 0 46px;}
+.filter-tabs{display:flex;gap:10px;flex-wrap:wrap;}
+.filter-tabs button{padding:11px 20px;border-radius:100px;border:1.5px solid var(--line);font-size:13.5px;font-weight:600;color:var(--text-soft);transition:all .3s var(--ease);background:var(--white);}
+.filter-tabs button.active{background:var(--ink);border-color:var(--ink);color:var(--white);}
+.filter-tabs button:hover:not(.active){border-color:var(--green-2);color:var(--text);}
+.filter-tabs .count{font-family:var(--font-mono);font-size:10.5px;opacity:.6;margin-left:5px;}
+
+/* ============ VIDEO GRID ============ */
+.vgrid-section{padding:0 0 110px;}
+.vgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;}
+@media(max-width:980px){.vgrid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:640px){.vgrid{grid-template-columns:1fr;}}
+.vcard{background:var(--white);border:1px solid var(--line);border-radius:var(--radius-m);overflow:hidden;transition:transform .4s var(--ease), box-shadow .4s var(--ease);cursor:pointer;}
+.vcard:hover{transform:translateY(-6px);box-shadow:0 26px 50px -24px rgba(10,30,22,.24);}
+.vcard-thumb{aspect-ratio:16/10;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#282828;}
+.vcard-thumb video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+.vcard-thumb::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,23,18,.15),rgba(10,23,18,.5));z-index:1;}
+.cloud-badge{position:absolute;top:12px;left:14px;font-family:var(--font-mono);font-size:10.5px;font-weight:600;color:rgba(255,255,255,.75);background:rgba(255,255,255,.14);padding:4px 9px;border-radius:8px;z-index:2;letter-spacing:.05em;}
+.vcard-thumb .vp{width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,.18);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,.4);transition:transform .35s var(--ease);position:relative;z-index:2;}
+.vcard:hover .vp{transform:scale(1.1);}
+.vcard-thumb .vp svg{width:18px;height:18px;color:var(--white);margin-left:2px;}
+.vcard-thumb .dur{position:absolute;bottom:10px;right:10px;background:rgba(10,23,18,.65);color:var(--white);font-family:var(--font-mono);font-size:11px;padding:4px 9px;border-radius:8px;z-index:2;}
+.vcard-thumb .num{position:absolute;top:12px;left:14px;font-family:var(--font-mono);font-size:11px;color:rgba(255,255,255,.6);z-index:2;letter-spacing:.05em;}
+.vcard-thumb::after{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.06) 1px, transparent 1px),linear-gradient(90deg, rgba(255,255,255,.06) 1px, transparent 1px);background-size:22px 22px;}
+.vcard-body{padding:20px 20px 22px;}
+.vcard-tag{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--green-2);font-weight:600;}
+.vcard-body h4{font-family:var(--font-display);font-weight:600;font-size:16.5px;margin-top:9px;letter-spacing:-.01em;}
+.vcard-body p{margin-top:7px;font-size:13.5px;color:var(--text-soft);line-height:1.55;}
+
+/* thumb color themes per category */
+.thm-demarrage{background:linear-gradient(155deg,var(--green),var(--ink-3));}
+.thm-devis{background:linear-gradient(155deg,#146449,#0A1712);}
+.thm-chantiers{background:linear-gradient(155deg,#0E4432,#1B3A2E);}
+.thm-parametres{background:linear-gradient(155deg,#18271F,#0A1712);}
+
+/* ============ MODAL ============ */
+.modal-overlay{position:fixed;inset:0;background:rgba(6,14,10,.72);backdrop-filter:blur(6px);z-index:200;display:none;align-items:center;justify-content:center;padding:24px;}
+.modal-overlay.open{display:flex;}
+.modal-box{background:var(--white);border-radius:var(--radius-l);max-width:760px;width:100%;overflow:hidden;box-shadow:0 60px 100px -30px rgba(0,0,0,.5);}
+.modal-screen{aspect-ratio:16/9;position:relative;background:#282828;overflow:hidden;}
+.modal-media-wrap{position:absolute;inset:0;}
+.modal-media-wrap video,.modal-media-wrap iframe{width:100%;height:100%;display:block;border:0;background:#282828;}
+.modal-media-wrap video{object-fit:contain;}
+.modal-close{position:absolute;top:16px;right:16px;width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;color:var(--white);z-index:5;transition:background .25s ease;}
+.modal-close:hover{background:rgba(0,0,0,.55);}
+.modal-close svg{width:16px;height:16px;}
+.modal-info{padding:26px 30px 30px;}
+.modal-info .vcard-tag{font-size:11px;}
+.modal-info h3{font-family:var(--font-display);font-weight:700;font-size:22px;margin-top:10px;}
+.modal-info p{margin-top:10px;color:var(--text-soft);font-size:14.5px;line-height:1.65;max-width:560px;}
+.modal-actions{display:flex;gap:12px;margin-top:22px;flex-wrap:wrap;}
+
+/* ============ RESOURCES STRIP ============ */
+.resources{padding:0 0 110px;}
+.res-card{display:flex;align-items:center;justify-content:space-between;gap:24px;background:var(--ink);color:var(--white);border-radius:var(--radius-l);padding:44px 44px;flex-wrap:wrap;}
+.res-card .l{display:flex;align-items:center;gap:20px;}
+.res-card .ic{width:56px;height:56px;border-radius:14px;background:rgba(52,211,153,.16);display:flex;align-items:center;justify-content:center;color:var(--bright-2);flex-shrink:0;}
+.res-card .ic svg{width:26px;height:26px;}
+.res-card h4{font-family:var(--font-display);font-weight:600;font-size:19px;}
+.res-card p{margin-top:5px;color:rgba(255,255,255,.6);font-size:14px;}
+
+/* ============ FOOTER (shared) ============ */
+footer{background:var(--ink);color:rgba(255,255,255,.65);padding:80px 0 30px;}
+.foot-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:40px;padding-bottom:56px;border-bottom:1px solid rgba(255,255,255,.1);}
+@media(max-width:760px){.foot-grid{grid-template-columns:1fr 1fr;}}
+@media(max-width:480px){.foot-grid{grid-template-columns:1fr;}}
+.foot-brand .logo{color:var(--white);}
+.foot-brand p{margin-top:16px;font-size:14px;line-height:1.6;max-width:260px;color:rgba(255,255,255,.5);}
+.foot-social{display:flex;gap:10px;margin-top:22px;}
+.foot-social a{width:36px;height:36px;border-radius:50%;border:1px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;transition:all .3s ease;}
+.foot-social a:hover{background:var(--bright);border-color:var(--bright);color:var(--ink);}
+.foot-social svg{width:16px;height:16px;}
+.foot-col h5{font-family:var(--font-mono);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:18px;}
+.foot-col ul{display:flex;flex-direction:column;gap:12px;}
+.foot-col a{font-size:14.5px;transition:color .25s ease;}
+.foot-col a:hover{color:var(--white);}
+.foot-bottom{display:flex;align-items:center;justify-content:space-between;padding-top:26px;font-size:13px;color:rgba(255,255,255,.4);flex-wrap:wrap;gap:12px;}
+.foot-bottom .legal{display:flex;gap:22px;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="nav-inner">
+    <a href="index.html" class="logo">
+      <span class="logo-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6"/></svg></span>
+      BTP Devis Pro
+    </a>
+    <nav class="nav-links">
+      <a href="index.html#fonctionnalites">Fonctionnalités</a>
+      <a href="index.html#pourquoi">Pourquoi nous</a>
+      <a href="videos.html" class="current">Tutoriels</a>
+      <a href="index.html#tarifs">Tarifs</a>
+      <a href="index.html#faq">FAQ</a>
+    </nav>
+    <div class="nav-cta">
+      <a href="https://btp-devis-pro-1.onrender.com/" class="nav-login">Se connecter</a>
+      <a href="https://btp-devis-pro-1.onrender.com/register.html" class="btn btn-primary btn-sm">Essai gratuit</a>
+    </div>
+    <button class="burger" id="burger" aria-label="Menu"><span></span></button>
+  </div>
+</header>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="index.html#fonctionnalites">Fonctionnalités</a>
+  <a href="index.html#pourquoi">Pourquoi nous</a>
+  <a href="videos.html">Tutoriels</a>
+  <a href="index.html#tarifs">Tarifs</a>
+  <a href="index.html#faq">FAQ</a>
+  <a href="https://btp-devis-pro-1.onrender.com/register.html" class="btn btn-primary">Essai gratuit — 14 jours</a>
+</div>
+
+<!-- ============ HERO ============ -->
+<section class="thero grid-bg">
+  <div class="wrap">
+    <div class="thero-inner reveal in-view">
+      <span class="eyebrow">Centre de tutoriels</span>
+      <h1>Apprenez BTP Devis Pro en quelques minutes</h1>
+      <p>Des vidéos courtes, classées par étape de votre flux administratif : prise en main, devis, facturation DGI et gestion de chantiers.</p>
+      <div class="thero-stats">
+        <div class="s"><b>6</b><span>TUTORIELS</span></div>
+        <div class="s"><b>3</b><span>CATÉGORIES</span></div>
+        <div class="s"><b>100%</b><span>PRATIQUE</span></div>
+      </div>
+      <div class="search-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        <input type="text" id="searchInput" placeholder="Rechercher un tutoriel — ex. « facture », « client »…">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FEATURED ============ -->
+<section class="featured">
+  <div class="wrap featured-grid">
+    <div class="demo-video-wrap reveal">
+      <video class="demo-video" id="fVideo" controls playsinline preload="metadata">
+        <source src="Introduction1.mp4" type="video/mp4">
+        Votre navigateur ne prend pas en charge la lecture vidéo.
+      </video>
+    </div>
+
+    <div class="featured-copy reveal">
+      <span class="badge">🔥 À regarder en premier</span>
+      <h3>Introduction — de la connexion à la prise en main</h3>
+      <p>Le point de départ idéal : connexion à votre compte, découverte du tableau de bord et navigation générale dans l'application.</p>
+      <div class="flen">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+        Vidéo d'introduction
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FILTERS + GRID ============ -->
+<section class="filters">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">Bibliothèque</span>
+      <h2>Tous les tutoriels, classés par étape</h2>
+      <p>Cliquez sur une vidéo pour lancer l'aperçu, ou filtrez par catégorie.</p>
+    </div>
+    <div class="filter-tabs reveal" id="filterTabs">
+      <button class="active" data-cat="all">Toutes <span class="count">5</span></button>
+      <button data-cat="demarrage">Démarrage</button>
+      <button data-cat="devis">Devis &amp; factures</button>
+      <button data-cat="chantiers">Chantiers &amp; clients</button>
+    </div>
+  </div>
+</section>
+
+<section class="vgrid-section">
+  <div class="wrap">
+    <div class="vgrid reveal-stagger" id="vgrid"></div>
+  </div>
+</section>
+
+<!-- ============ RESOURCES ============ -->
+<section class="resources">
+  <div class="wrap">
+    <div class="res-card reveal">
+      <div class="l">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 3v5h5M6 3h8l5 5v13H6z"/><path d="M9 13h6M9 17h6"/></svg></span>
+        <div>
+          <h4>Vous préférez lire plutôt que regarder ?</h4>
+          <p>Le guide utilisateur complet couvre les mêmes sujets, pas à pas, avec captures d'écran.</p>
+        </div>
+      </div>
+      <a href="https://raw.githubusercontent.com/byl06/cv/main/BTP_Devis_Pro_Guide_Utilisateur%20(4).pdf" class="btn btn-primary btn-sm">Télécharger le guide PDF</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MODAL ============ -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-box">
+    <div class="modal-screen" id="modalScreen">
+      <button class="modal-close" id="modalClose" aria-label="Fermer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+      <div class="modal-media-wrap" id="modalMediaWrap"></div>
+    </div>
+    <div class="modal-info">
+      <span class="vcard-tag" id="modalTag">Catégorie</span>
+      <h3 id="modalTitle">Titre du tutoriel</h3>
+      <p id="modalDesc">Description du tutoriel.</p>
+      <div class="modal-actions">
+        <a href="https://btp-devis-pro-1.onrender.com/" class="btn btn-primary btn-sm">Essayer dans l'application</a>
+        <button class="btn btn-ghost btn-sm" id="modalCloseBtn">Fermer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <a href="index.html" class="logo">
+          <span class="logo-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6"/></svg></span>
+          BTP Devis Pro
+        </a>
+        <p>Devis, situations de travaux et facturation normalisée DGI — pour les entreprises du BTP au Bénin.</p>
+        <div class="foot-social">
+          <a href="https://wa.me/2290151596397" aria-label="WhatsApp"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.1-1.7-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.8 1-.9 1.1-.2.2-.3.2-.6.1-.3-.1-1.2-.5-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6.1-.1.3-.3.4-.5.1-.1.2-.3.3-.5.1-.2 0-.4 0-.5C10.1 9 9.5 7.6 9.3 7c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.3.3-1 1-1 2.4s1 2.8 1.2 3c.1.2 2.1 3.2 5 4.4.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.2.2-1.4-.1-.1-.3-.2-.5-.3zM12 2a10 10 0 0 0-8.6 15.1L2 22l5.1-1.3A10 10 0 1 0 12 2z"/></svg></a>
+          <a href="mailto:devisbtp496@gmail.com" aria-label="Email"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></a>
+          <a href="#" aria-label="LinkedIn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9h4v12H3zM9 9h3.8v1.7h.05c.53-1 1.83-2 3.77-2 4.03 0 4.78 2.65 4.78 6.1V21h-4v-5.5c0-1.3-.02-3-1.83-3-1.83 0-2.1 1.43-2.1 2.9V21H9z"/></svg></a>
+        </div>
+      </div>
+      <div class="foot-col">
+        <h5>Produit</h5>
+        <ul>
+          <li><a href="index.html#fonctionnalites">Fonctionnalités</a></li>
+          <li><a href="index.html#tarifs">Tarifs</a></li>
+          <li><a href="index.html#demo">Démonstration</a></li>
+          <li><a href="index.html#faq">FAQ</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <h5>Ressources</h5>
+        <ul>
+          <li><a href="https://raw.githubusercontent.com/byl06/cv/main/BTP_Devis_Pro_Guide_Utilisateur%20(4).pdf">Guide utilisateur</a></li>
+          <li><a href="videos.html">Tutoriels vidéo</a></li>
+          <li><a href="https://btp-devis-pro-1.onrender.com/">Espace client</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <h5>Contact</h5>
+        <ul>
+          <li><a href="https://wa.me/2290151596397">WhatsApp</a></li>
+          <li><a href="mailto:devisbtp496@gmail.com">devisbtp496@gmail.com</a></li>
+          <li><a href="#">Lun–Ven · 8h–20h</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 BTP Devis Pro. Tous droits réservés.</span>
+      <div class="legal"><a href="#">Confidentialité</a><a href="#">Conditions</a></div>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ===== mobile menu =====
+const burger=document.getElementById('burger'), mobileMenu=document.getElementById('mobileMenu');
+burger.addEventListener('click',()=>{burger.classList.toggle('open');mobileMenu.classList.toggle('open');});
+mobileMenu.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{burger.classList.remove('open');mobileMenu.classList.remove('open');}));
+
+// ===== scroll reveal =====
+const io=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in-view'); } });
+},{threshold:.12});
+document.querySelectorAll('.reveal,.reveal-stagger,.bracket').forEach(el=>io.observe(el));
+
+// ===== featured video ===== (native <video> controls handle playback)
+
+// ===== tutorial data (fichiers réels + vidéos Cloudinary) =====
+const tutorials=[
+  {cat:'demarrage',tag:'Démarrage',title:"Découverte de l'interface",type:'iframe',src:'https://player.cloudinary.com/embed/?cloud_name=y8rdyvtk&public_id=Decouverinter_ztv5gv',desc:"Repérez les menus, le tableau de bord et la navigation générale de l'application."},
+  {cat:'chantiers',tag:'Chantiers & clients',title:'Créer un client',type:'video',file:'Creation_Client.mp4',desc:"Ajoutez une fiche client complète : coordonnées, adresse et IFU."},
+  {cat:'chantiers',tag:'Chantiers & clients',title:'Créer un projet',type:'video',file:'Creation_Projet.mp4',desc:"Ouvrez un nouveau chantier : nom, localisation et dates de travaux."},
+  {cat:'devis',tag:'Devis & factures',title:"Créer un devis & configurer l'acompte",type:'iframe',src:'https://player.cloudinary.com/embed/?cloud_name=y8rdyvtk&public_id=Creation_Devis_Configaccompte_spnkw3',desc:"Ajoutez vos lignes de devis, laissez le total se calculer, puis configurez l'acompte."},
+  {cat:'devis',tag:'Devis & factures',title:'Générer une facture, télécharger & infos fiscales',type:'iframe',src:'https://player.cloudinary.com/embed/?cloud_name=y8rdyvtk&public_id=Generation_Facture_Telechargement_Info_Fiscal_jbuan4',desc:"Générez la facture depuis un devis validé, renseignez les infos fiscales et téléchargez le PDF."}
+];
+
+const catThumb={demarrage:'thm-demarrage',devis:'thm-devis',chantiers:'thm-chantiers'};
+
+const vgrid=document.getElementById('vgrid');
+function renderGrid(list){
+  vgrid.innerHTML='';
+  if(list.length===0){
+    vgrid.innerHTML='<p style="color:var(--text-mute);font-size:14.5px;grid-column:1/-1;">Aucun tutoriel ne correspond à cette recherche.</p>';
+    return;
+  }
+  list.forEach((t)=>{
+    const card=document.createElement('div');
+    card.className='vcard';
+    const thumbInner = t.type==='video'
+      ? `<video muted preload="metadata" playsinline><source src="${encodeURI(t.file)}#t=0.5" type="video/mp4"></video>`
+      : `<span class="cloud-badge">HD</span>`;
+    card.innerHTML=`
+      <div class="vcard-thumb ${catThumb[t.cat]}">
+        ${thumbInner}
+        <div class="vp"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
+      </div>
+      <div class="vcard-body">
+        <span class="vcard-tag">${t.tag}</span>
+        <h4>${t.title}</h4>
+        <p>${t.desc}</p>
+      </div>`;
+    card.addEventListener('click',()=>openModal(t));
+    vgrid.appendChild(card);
+  });
+  vgrid.querySelectorAll('.vcard').forEach(el=>io.observe(el));
+}
+renderGrid(tutorials);
+
+// ===== filters =====
+const filterTabs=document.getElementById('filterTabs');
+filterTabs.addEventListener('click',(e)=>{
+  const btn=e.target.closest('button');
+  if(!btn) return;
+  filterTabs.querySelectorAll('button').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const cat=btn.getAttribute('data-cat');
+  const filtered = cat==='all' ? tutorials : tutorials.filter(t=>t.cat===cat);
+  renderGrid(applySearch(filtered));
+});
+
+// ===== search =====
+const searchInput=document.getElementById('searchInput');
+function applySearch(list){
+  const q=searchInput.value.trim().toLowerCase();
+  if(!q) return list;
+  return list.filter(t=> (t.title+' '+t.desc).toLowerCase().includes(q));
+}
+searchInput.addEventListener('input',()=>{
+  const activeCat=filterTabs.querySelector('button.active').getAttribute('data-cat');
+  const base = activeCat==='all' ? tutorials : tutorials.filter(t=>t.cat===activeCat);
+  renderGrid(applySearch(base));
+});
+
+// ===== modal (vidéo locale OU lecteur Cloudinary en iframe) =====
+const modalOverlay=document.getElementById('modalOverlay');
+const modalTag=document.getElementById('modalTag'), modalTitle=document.getElementById('modalTitle'), modalDesc=document.getElementById('modalDesc');
+const modalMediaWrap=document.getElementById('modalMediaWrap');
+function openModal(t){
+  modalTag.textContent=t.tag; modalTitle.textContent=t.title; modalDesc.textContent=t.desc;
+  modalMediaWrap.innerHTML='';
+  if(t.type==='video'){
+    const video=document.createElement('video');
+    video.controls=true; video.playsInline=true; video.autoplay=true; video.preload='metadata';
+    const source=document.createElement('source');
+    source.src=encodeURI(t.file); source.type='video/mp4';
+    video.appendChild(source);
+    modalMediaWrap.appendChild(video);
+  } else {
+    const iframe=document.createElement('iframe');
+    iframe.src=t.src+(t.src.includes('?')?'&':'?')+'autoplay=true';
+    iframe.allow='autoplay; fullscreen; encrypted-media; picture-in-picture';
+    iframe.allowFullscreen=true;
+    iframe.title=t.title;
+    iframe.frameBorder='0';
+    modalMediaWrap.appendChild(iframe);
+  }
+  modalOverlay.classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeModal(){
+  modalOverlay.classList.remove('open');
+  document.body.style.overflow='';
+  modalMediaWrap.innerHTML='';
+}
+document.getElementById('modalClose').addEventListener('click',closeModal);
+document.getElementById('modalCloseBtn').addEventListener('click',closeModal);
+modalOverlay.addEventListener('click',(e)=>{ if(e.target===modalOverlay) closeModal(); });
+document.addEventListener('keydown',(e)=>{ if(e.key==='Escape') closeModal(); });
+
+// nav shadow on scroll
+const navInner=document.querySelector('.nav-inner');
+window.addEventListener('scroll',()=>{
+  navInner.style.boxShadow = window.scrollY>10 ? '0 8px 30px -12px rgba(10,23,18,.25)' : '0 8px 30px -14px rgba(10,23,18,.15)';
+});
+</script>
+</body>
+</html>

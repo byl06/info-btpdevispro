@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BTP Devis Pro — Devis, situations &amp; factures DGI pour le BTP</title>
+<meta name="description" content="Devis chiffrés en minutes, situations de travaux suivies au franc près, factures normalisées DGI en un clic. L'outil de gestion pensé pour les entreprises du BTP au Bénin.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============ TOKENS ============ */
+:root{
+  --paper:#F5F7F3;
+  --paper-2:#ECF1EA;
+  --ink:#0A1712;
+  --ink-2:#122019;
+  --ink-3:#18271F;
+  --green:#0E4432;
+  --green-2:#146449;
+  --bright:#34D399;
+  --bright-2:#8FF0C2;
+  --line:#DEE6DD;
+  --line-soft:#E7ECE5;
+  --text:#0F1E17;
+  --text-soft:#526257;
+  --text-mute:#7C8A80;
+  --white:#FFFFFF;
+  --radius-s:10px;
+  --radius-m:18px;
+  --radius-l:28px;
+  --ease:cubic-bezier(.22,1,.36,1);
+  --font-display:'Poppins',sans-serif;
+  --font-body:'Inter',sans-serif;
+  --font-mono:'JetBrains Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto;}*{animation-duration:0.01ms !important;animation-iteration-count:1 !important;transition-duration:0.01ms !important;}}
+body{
+  font-family:var(--font-body);
+  background:var(--paper);
+  color:var(--text);
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+img{max-width:100%;display:block;}
+a{color:inherit;text-decoration:none;}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;}
+ul{list-style:none;}
+:focus-visible{outline:2px solid var(--bright);outline-offset:3px;border-radius:4px;}
+.wrap{max-width:1220px;margin:0 auto;padding:0 32px;}
+@media(max-width:640px){.wrap{padding:0 20px;}}
+
+.eyebrow{
+  font-family:var(--font-mono);
+  font-size:12.5px;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--green-2);
+  display:inline-flex;
+  align-items:center;
+  gap:9px;
+  font-weight:500;
+}
+.eyebrow::before{content:'';width:16px;height:1px;background:var(--bright);display:inline-block;}
+.section-head{max-width:640px;margin-bottom:56px;}
+.section-head h2{font-family:var(--font-display);font-weight:700;font-size:clamp(30px,4vw,44px);line-height:1.12;letter-spacing:-.02em;margin-top:14px;color:var(--text);}
+.section-head p{margin-top:16px;color:var(--text-soft);font-size:17px;line-height:1.6;}
+section{position:relative;}
+
+/* subtle blueprint grid texture for light sections */
+.grid-bg{
+  background-image:
+    linear-gradient(var(--line-soft) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line-soft) 1px, transparent 1px);
+  background-size:44px 44px;
+  background-position:center top;
+}
+.grid-bg-dark{
+  background-image:
+    linear-gradient(rgba(255,255,255,.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.045) 1px, transparent 1px);
+  background-size:44px 44px;
+}
+
+/* corner bracket signature motif */
+.bracket{position:relative;}
+.bracket::before,.bracket::after{
+  content:'';position:absolute;width:16px;height:16px;
+  border:1.5px solid var(--bright);opacity:0;
+  transition:opacity .35s var(--ease), transform .35s var(--ease);
+}
+.bracket::before{top:-1px;left:-1px;border-right:none;border-bottom:none;transform:translate(4px,4px);}
+.bracket::after{bottom:-1px;right:-1px;border-left:none;border-top:none;transform:translate(-4px,-4px);}
+.bracket:hover::before,.bracket:hover::after,.bracket.in-view::before,.bracket.in-view::after{opacity:.9;transform:translate(0,0);}
+
+/* reveal on scroll */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .8s var(--ease), transform .8s var(--ease);}
+.reveal.in-view{opacity:1;transform:translateY(0);}
+.reveal-stagger>*{opacity:0;transform:translateY(24px);transition:opacity .7s var(--ease), transform .7s var(--ease);}
+.reveal-stagger.in-view>*{opacity:1;transform:translateY(0);}
+.reveal-stagger.in-view>*:nth-child(1){transition-delay:.02s;}
+.reveal-stagger.in-view>*:nth-child(2){transition-delay:.09s;}
+.reveal-stagger.in-view>*:nth-child(3){transition-delay:.16s;}
+.reveal-stagger.in-view>*:nth-child(4){transition-delay:.23s;}
+.reveal-stagger.in-view>*:nth-child(5){transition-delay:.30s;}
+.reveal-stagger.in-view>*:nth-child(6){transition-delay:.37s;}
+.reveal-stagger.in-view>*:nth-child(7){transition-delay:.44s;}
+.reveal-stagger.in-view>*:nth-child(8){transition-delay:.51s;}
+.reveal-stagger.in-view>*:nth-child(9){transition-delay:.58s;}
+
+/* buttons */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:9px;
+  padding:15px 26px;border-radius:100px;font-weight:600;font-size:15px;
+  transition:transform .35s var(--ease), box-shadow .35s var(--ease), background .3s ease, border-color .3s ease;
+  white-space:nowrap;
+}
+.btn-primary{
+  background:linear-gradient(135deg,var(--bright),#22B885);
+  color:#08281D;box-shadow:0 8px 24px -8px rgba(52,211,153,.55);
+}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 14px 32px -10px rgba(52,211,153,.65);}
+.btn-ghost{border:1.5px solid var(--line);color:var(--text);background:rgba(255,255,255,.5);}
+.btn-ghost:hover{border-color:var(--green-2);transform:translateY(-2px);}
+.btn-ghost-dark{border:1.5px solid rgba(255,255,255,.22);color:var(--white);}
+.btn-ghost-dark:hover{border-color:var(--bright);transform:translateY(-2px);}
+.btn-sm{padding:11px 20px;font-size:13.5px;}
+.btn svg{width:16px;height:16px;}
+
+/* ============ HEADER ============ */
+header{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  padding:16px 0;
+}
+.nav-inner{
+  max-width:1220px;margin:0 auto;padding:0 32px;
+  display:flex;align-items:center;justify-content:space-between;
+  height:64px;border-radius:100px;
+  background:rgba(245,247,243,.72);
+  backdrop-filter:blur(16px) saturate(160%);
+  -webkit-backdrop-filter:blur(16px) saturate(160%);
+  border:1px solid rgba(255,255,255,.6);
+  box-shadow:0 8px 30px -14px rgba(10,23,18,.15);
+  transition:box-shadow .3s ease;
+}
+@media(max-width:640px){.nav-inner{padding:0 16px;}}
+.logo{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-weight:700;font-size:16.5px;letter-spacing:-.01em;}
+.logo-mark{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--green),var(--green-2));display:flex;align-items:center;justify-content:center;color:var(--bright-2);flex-shrink:0;}
+.logo-mark svg{width:18px;height:18px;}
+.nav-links{display:flex;align-items:center;gap:34px;font-size:14.5px;font-weight:500;color:var(--text-soft);}
+.nav-links a{position:relative;padding:4px 0;transition:color .25s ease;}
+.nav-links a::after{content:'';position:absolute;left:0;bottom:0;width:0;height:1.5px;background:var(--bright);transition:width .3s var(--ease);}
+.nav-links a:hover{color:var(--text);}
+.nav-links a:hover::after{width:100%;}
+.nav-cta{display:flex;align-items:center;gap:12px;}
+.nav-login{font-size:14.5px;font-weight:600;color:var(--text-soft);padding:10px 6px;}
+.nav-login:hover{color:var(--text);}
+.burger{display:none;width:38px;height:38px;border-radius:50%;align-items:center;justify-content:center;}
+.burger span{display:block;width:18px;height:1.5px;background:var(--text);position:relative;transition:background .2s;}
+.burger span::before,.burger span::after{content:'';position:absolute;left:0;width:18px;height:1.5px;background:var(--text);transition:transform .3s var(--ease);}
+.burger span::before{top:-6px;}.burger span::after{top:6px;}
+.burger.open span{background:transparent;}
+.burger.open span::before{transform:translateY(6px) rotate(45deg);}
+.burger.open span::after{transform:translateY(-6px) rotate(-45deg);}
+@media(max-width:900px){
+  .nav-links{display:none;}
+  .nav-login{display:none;}
+  .burger{display:flex;}
+}
+.mobile-menu{
+  position:fixed;inset:0;background:var(--ink);z-index:99;
+  display:flex;flex-direction:column;justify-content:center;padding:32px;
+  transform:translateY(-100%);transition:transform .5s var(--ease);
+}
+.mobile-menu.open{transform:translateY(0);}
+.mobile-menu a{color:var(--white);font-family:var(--font-display);font-size:30px;font-weight:600;padding:14px 0;border-bottom:1px solid rgba(255,255,255,.1);}
+.mobile-menu .btn{margin-top:26px;width:100%;}
+
+/* ============ HERO ============ */
+.hero{padding:168px 0 100px;position:relative;overflow:hidden;}
+.hero::before{
+  content:'';position:absolute;top:-200px;right:-160px;width:640px;height:640px;border-radius:50%;
+  background:radial-gradient(circle,rgba(52,211,153,.28),transparent 68%);filter:blur(10px);pointer-events:none;
+}
+.hero-grid{display:grid;grid-template-columns:1.02fr .98fr;gap:56px;align-items:center;}
+@media(max-width:980px){.hero-grid{grid-template-columns:1fr;gap:60px;}}
+.hero-copy h1{
+  font-family:var(--font-display);font-weight:700;letter-spacing:-.03em;
+  font-size:clamp(38px,5.2vw,60px);line-height:1.06;margin-top:20px;color:var(--text);
+}
+.hero-copy h1 em{font-style:normal;color:var(--green-2);position:relative;}
+.hero-copy p{margin-top:22px;font-size:18px;color:var(--text-soft);max-width:480px;line-height:1.65;}
+.hero-actions{display:flex;gap:14px;margin-top:34px;flex-wrap:wrap;}
+.hero-foot{margin-top:34px;display:flex;align-items:center;gap:10px;font-family:var(--font-mono);font-size:12.5px;color:var(--text-mute);}
+.hero-foot .dot{width:6px;height:6px;border-radius:50%;background:var(--bright);box-shadow:0 0 0 4px rgba(52,211,153,.18);}
+
+/* devis live mockup */
+.mock-shell{position:relative;}
+.mock-card{
+  background:var(--white);border-radius:var(--radius-l);
+  border:1px solid var(--line);
+  box-shadow:0 40px 80px -30px rgba(10,30,22,.28);
+  overflow:hidden;
+  transform:rotate(1.2deg);
+}
+.mock-topbar{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--line-soft);background:var(--paper-2);}
+.mock-dots{display:flex;gap:6px;}
+.mock-dots span{width:9px;height:9px;border-radius:50%;background:#D7DED5;}
+.mock-topbar .tag{font-family:var(--font-mono);font-size:11px;color:var(--green-2);background:rgba(52,211,153,.14);padding:4px 10px;border-radius:20px;font-weight:600;letter-spacing:.04em;}
+.mock-body{padding:26px 24px 22px;}
+.mock-title{font-family:var(--font-display);font-weight:600;font-size:16px;}
+.mock-sub{font-family:var(--font-mono);font-size:12px;color:var(--text-mute);margin-top:4px;}
+.mock-lines{margin-top:20px;display:flex;flex-direction:column;gap:0;}
+.mock-line{
+  display:grid;grid-template-columns:1fr auto auto;gap:14px;padding:12px 0;
+  border-bottom:1px dashed var(--line);font-size:13.5px;
+  opacity:0;transform:translateX(-8px);transition:opacity .5s ease, transform .5s ease;
+}
+.mock-line.show{opacity:1;transform:translateX(0);}
+.mock-line .desig{color:var(--text);font-weight:500;}
+.mock-line .qty{font-family:var(--font-mono);color:var(--text-mute);font-size:12.5px;}
+.mock-line .price{font-family:var(--font-mono);color:var(--text);font-weight:600;font-size:12.5px;}
+.mock-total{display:flex;align-items:center;justify-content:space-between;margin-top:18px;padding-top:16px;border-top:1.5px solid var(--text);}
+.mock-total .lbl{font-family:var(--font-mono);font-size:11.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-mute);}
+.mock-total .val{font-family:var(--font-display);font-weight:700;font-size:22px;color:var(--green);}
+.mock-float{
+  position:absolute;background:var(--ink);color:var(--white);border-radius:16px;padding:14px 16px;
+  box-shadow:0 20px 40px -14px rgba(10,23,18,.5);display:flex;align-items:center;gap:10px;
+}
+.mock-float-1{top:-22px;left:-30px;font-family:var(--font-mono);font-size:12px;}
+.mock-float-1 .qr{width:34px;height:34px;border-radius:6px;background:linear-gradient(135deg,var(--bright),var(--green-2));display:grid;grid-template-columns:repeat(3,1fr);gap:2px;padding:5px;}
+.mock-float-1 .qr i{background:var(--ink);border-radius:1px;}
+.mock-float-2{bottom:-18px;right:-24px;background:var(--white);border:1px solid var(--line);color:var(--text);font-size:12.5px;font-weight:600;}
+.mock-float-2 .ic{width:26px;height:26px;border-radius:50%;background:rgba(52,211,153,.18);display:flex;align-items:center;justify-content:center;color:var(--green-2);}
+@media(max-width:560px){.mock-float{display:none;}}
+
+/* ============ TRUST ============ */
+.trust{padding:52px 0;border-top:1px solid var(--line-soft);border-bottom:1px solid var(--line-soft);background:var(--paper-2);}
+.trust-label{text-align:center;font-family:var(--font-mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-mute);margin-bottom:28px;}
+.marquee{overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);}
+.marquee-track{display:flex;gap:0;width:max-content;animation:scroll-left 34s linear infinite;}
+@keyframes scroll-left{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+.marquee-item{display:flex;align-items:center;gap:10px;padding:0 40px;font-family:var(--font-display);font-weight:600;font-size:19px;color:var(--text-mute);white-space:nowrap;opacity:.75;}
+.marquee-item svg{width:20px;height:20px;color:var(--green-2);flex-shrink:0;}
+.marquee:hover .marquee-track{animation-play-state:paused;}
+
+/* ============ FEATURES ============ */
+.features{padding:130px 0 100px;}
+.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+@media(max-width:900px){.feat-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:620px){.feat-grid{grid-template-columns:1fr;}}
+.feat-card{
+  padding:30px 26px;border-radius:var(--radius-m);background:var(--white);
+  border:1px solid var(--line);position:relative;overflow:hidden;
+  transition:transform .4s var(--ease), box-shadow .4s var(--ease), border-color .4s var(--ease);
+}
+.feat-card::before{
+  content:'';position:absolute;inset:0;opacity:0;transition:opacity .4s ease;
+  background:radial-gradient(320px circle at var(--mx,50%) var(--my,0%), rgba(52,211,153,.10), transparent 60%);
+}
+.feat-card:hover{transform:translateY(-6px);box-shadow:0 26px 50px -24px rgba(10,30,22,.24);border-color:transparent;}
+.feat-card:hover::before{opacity:1;}
+.feat-num{font-family:var(--font-mono);font-size:11.5px;color:var(--text-mute);letter-spacing:.05em;}
+.feat-icon{
+  width:46px;height:46px;border-radius:12px;margin-top:16px;
+  background:linear-gradient(135deg,var(--green),var(--green-2));
+  display:flex;align-items:center;justify-content:center;color:var(--bright-2);
+  transition:transform .4s var(--ease);
+}
+.feat-card:hover .feat-icon{transform:scale(1.08) rotate(-4deg);}
+.feat-icon svg{width:22px;height:22px;}
+.feat-card h3{font-family:var(--font-display);font-weight:600;font-size:18.5px;margin-top:18px;letter-spacing:-.01em;}
+.feat-card p{margin-top:9px;font-size:14.5px;color:var(--text-soft);line-height:1.6;}
+
+/* ============ DOCUMENTS SHOWCASE ============ */
+.docs{padding:60px 0 130px;}
+.docs-showcase{display:grid;grid-template-columns:.62fr 1.38fr;gap:28px;align-items:stretch;}
+@media(max-width:900px){.docs-showcase{grid-template-columns:1fr;}}
+
+.docs-tabs{display:flex;flex-direction:column;gap:12px;height:100%;}
+.docs-tab{
+  text-align:left;padding:20px 22px;border-radius:var(--radius-m);border:1px solid var(--line);
+  background:var(--white);transition:border-color .35s ease, background .35s ease, transform .35s var(--ease);
+  display:flex;flex-direction:column;gap:8px;position:relative;overflow:hidden;
+}
+.docs-tab:hover{transform:translateX(3px);}
+.docs-tab.active{border-color:var(--green-2);background:linear-gradient(155deg,rgba(52,211,153,.09),rgba(255,255,255,0));}
+.dt-top{display:flex;align-items:baseline;gap:10px;}
+.dt-num{font-family:var(--font-mono);font-size:11.5px;color:var(--text-mute);}
+.docs-tab.active .dt-num{color:var(--green-2);}
+.dt-name{font-family:var(--font-display);font-weight:600;font-size:16px;color:var(--text);}
+.dt-desc{font-size:13.5px;color:var(--text-soft);line-height:1.55;}
+.dt-bar{display:block;height:2px;background:var(--line);border-radius:2px;overflow:hidden;margin-top:4px;}
+.dt-bar i{display:block;height:100%;width:0%;background:var(--bright);border-radius:2px;}
+.docs-tab.active .dt-bar i{transition:width 5s linear;width:100%;}
+@media(max-width:900px){.docs-tabs{flex-direction:row;overflow-x:auto;padding-bottom:6px;}.docs-tab{min-width:230px;flex-shrink:0;}}
+
+.docs-stage{
+  position:relative;border-radius:var(--radius-l);overflow:hidden;
+  background:linear-gradient(165deg,var(--paper-2) 0%, #E3EBE0 100%);
+  border:1px solid var(--line);box-shadow:0 40px 80px -34px rgba(10,30,22,.28);
+  display:flex;flex-direction:column;
+}
+.docs-toolbar{display:flex;align-items:center;gap:14px;padding:14px 20px;border-bottom:1px solid var(--line-soft);background:rgba(255,255,255,.55);backdrop-filter:blur(6px);}
+.docs-dots-mac{display:flex;gap:6px;}
+.docs-dots-mac i{width:9px;height:9px;border-radius:50%;background:#D7DED5;display:block;}
+.docs-filename{font-family:var(--font-mono);font-size:12px;color:var(--text-mute);}
+.docs-tag-live{margin-left:auto;font-family:var(--font-mono);font-size:11px;font-weight:600;color:var(--green-2);background:rgba(52,211,153,.14);padding:4px 12px;border-radius:20px;letter-spacing:.03em;}
+.docs-frame{position:relative;flex:1;min-height:460px;padding:34px;}
+@media(max-width:640px){.docs-frame{min-height:340px;padding:20px;}}
+.docs-slide{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:34px;opacity:0;transform:scale(.96) translateY(10px);transition:opacity .65s var(--ease), transform .65s var(--ease);pointer-events:none;}
+@media(max-width:640px){.docs-slide{padding:20px;}}
+.docs-slide.active{opacity:1;transform:scale(1) translateY(0);pointer-events:auto;position:relative;}
+.docs-slide img{max-width:100%;max-height:560px;width:auto;height:auto;object-fit:contain;filter:drop-shadow(0 30px 50px rgba(10,30,22,.28));border-radius:4px;}
+
+.docs-thumbs{display:flex;gap:14px;margin-top:22px;flex-wrap:wrap;}
+.docs-thumb{
+  display:flex;align-items:center;gap:10px;padding:8px 16px 8px 8px;border-radius:100px;
+  border:1.5px solid var(--line);background:var(--white);transition:all .3s var(--ease);
+}
+.docs-thumb:hover{border-color:var(--green-2);}
+.docs-thumb.active{border-color:var(--green);background:linear-gradient(135deg,rgba(52,211,153,.1),transparent);}
+.docs-thumb img{width:34px;height:34px;border-radius:50%;object-fit:cover;border:1px solid var(--line-soft);background:var(--white);}
+.docs-thumb span{font-size:13px;font-weight:600;color:var(--text-soft);}
+.docs-thumb.active span{color:var(--text);}
+
+/* ============ WHY / COMPARISON ============ */
+.why{padding:100px 0;background:var(--ink);color:var(--white);position:relative;}
+.why .section-head h2{color:var(--white);}
+.why .section-head p{color:rgba(255,255,255,.62);}
+.why .eyebrow{color:var(--bright-2);}
+.why .eyebrow::before{background:var(--bright-2);}
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:2px;border-radius:var(--radius-l);overflow:hidden;border:1px solid rgba(255,255,255,.1);}
+@media(max-width:760px){.compare{grid-template-columns:1fr;}}
+.compare-col{padding:38px 34px;}
+.compare-before{background:rgba(255,255,255,.03);}
+.compare-after{background:linear-gradient(160deg,rgba(52,211,153,.14),rgba(52,211,153,.03));}
+.compare-tag{font-family:var(--font-mono);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;padding:5px 12px;border-radius:20px;display:inline-block;}
+.compare-before .compare-tag{background:rgba(255,255,255,.08);color:rgba(255,255,255,.55);}
+.compare-after .compare-tag{background:rgba(52,211,153,.18);color:var(--bright-2);}
+.compare-col h3{font-family:var(--font-display);font-size:22px;margin-top:16px;font-weight:600;}
+.compare-list{margin-top:22px;display:flex;flex-direction:column;gap:16px;}
+.compare-list li{display:flex;gap:12px;font-size:14.5px;color:rgba(255,255,255,.72);align-items:flex-start;line-height:1.55;}
+.compare-list svg{width:18px;height:18px;flex-shrink:0;margin-top:2px;}
+.compare-before svg{color:#E6746B;}
+.compare-after svg{color:var(--bright);}
+
+/* ============ DEMO ============ */
+.demo{padding:130px 0 110px;}
+.demo-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:60px;align-items:center;}
+@media(max-width:980px){.demo-grid{grid-template-columns:1fr;}}
+.laptop{position:relative;}
+.laptop-frame{
+  background:var(--ink);border-radius:20px 20px 6px 6px;padding:14px 14px 40px;
+  box-shadow:0 50px 90px -30px rgba(10,30,22,.4);
+}
+.laptop-notch{position:absolute;top:14px;left:50%;transform:translateX(-50%);width:80px;height:14px;background:var(--ink);border-radius:0 0 10px 10px;z-index:2;}
+.laptop-screen{
+  aspect-ratio:16/10;border-radius:8px;overflow:hidden;position:relative;
+  background:linear-gradient(150deg,var(--green) 0%, var(--ink-3) 70%);
+}
+.laptop-base{height:12px;background:linear-gradient(var(--ink-2),var(--ink));border-radius:0 0 10px 10px;margin-top:-1px;position:relative;}
+.laptop-base::after{content:'';position:absolute;left:50%;top:0;transform:translateX(-50%);width:90px;height:5px;background:rgba(0,0,0,.35);border-radius:0 0 6px 6px;}
+.demo-scene{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;color:var(--white);text-align:center;padding:20px;}
+.demo-play{
+  width:66px;height:66px;border-radius:50%;background:rgba(255,255,255,.14);backdrop-filter:blur(6px);
+  display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,.35);
+  transition:transform .35s var(--ease), background .3s ease;
+}
+.demo-play:hover{transform:scale(1.08);background:rgba(255,255,255,.22);}
+.demo-play svg{width:22px;height:22px;color:var(--white);margin-left:3px;}
+.demo-scene .len{font-family:var(--font-mono);font-size:12px;color:rgba(255,255,255,.65);letter-spacing:.05em;}
+.demo-scene.playing .demo-play{display:none;}
+.demo-tour{display:none;position:absolute;inset:0;}
+.demo-scene.playing + .demo-tour{display:block;}
+.tour-frame{position:absolute;inset:0;opacity:0;transition:opacity .6s ease;padding:22px;display:flex;flex-direction:column;justify-content:center;gap:10px;}
+.tour-frame.active{opacity:1;}
+.tour-frame .tf-label{font-family:var(--font-mono);font-size:11px;color:var(--bright-2);letter-spacing:.08em;text-transform:uppercase;}
+.tour-frame .tf-title{font-family:var(--font-display);font-weight:600;font-size:19px;color:var(--white);}
+.tour-bar{height:8px;border-radius:4px;background:rgba(255,255,255,.12);overflow:hidden;margin-top:6px;}
+.tour-bar i{display:block;height:100%;background:var(--bright);width:0%;border-radius:4px;}
+.tour-frame.active .tour-bar i{transition:width 3.2s linear;width:100%;}
+.tour-rows{display:flex;flex-direction:column;gap:8px;margin-top:6px;}
+.tour-rows span{height:9px;border-radius:4px;background:rgba(255,255,255,.14);}
+.tour-rows span:nth-child(1){width:88%;} .tour-rows span:nth-child(2){width:64%;} .tour-rows span:nth-child(3){width:76%;}
+.demo-progress{display:flex;gap:6px;position:absolute;bottom:14px;left:22px;right:22px;}
+.demo-progress i{flex:1;height:3px;border-radius:2px;background:rgba(255,255,255,.18);}
+.demo-progress i.active{background:var(--bright);}
+.demo-check{margin-top:30px;display:grid;grid-template-columns:1fr 1fr;gap:12px 22px;}
+@media(max-width:480px){.demo-check{grid-template-columns:1fr;}}
+.demo-check li{display:flex;align-items:center;gap:10px;font-size:14.5px;color:var(--text-soft);font-weight:500;}
+.demo-check svg{width:18px;height:18px;color:var(--green-2);flex-shrink:0;}
+.demo-copy .stats{display:flex;gap:34px;margin-top:36px;flex-wrap:wrap;}
+.demo-copy .stat b{font-family:var(--font-display);font-size:26px;font-weight:700;color:var(--green);display:block;}
+.demo-copy .stat span{font-family:var(--font-mono);font-size:12px;color:var(--text-mute);}
+.demo-actions{display:flex;gap:14px;margin-top:32px;flex-wrap:wrap;}
+
+.demo-video-wrap{background:#282828;border-radius:20px;overflow:hidden;box-shadow:0 50px 90px -30px rgba(10,30,22,.4);}
+.demo-video{width:100%;display:block;aspect-ratio:16/10;object-fit:contain;background:#282828;}
+
+/* ============ TESTIMONIALS ============ */
+.avis{padding:120px 0;background:var(--paper-2);overflow:hidden;}
+.avis-track-wrap{overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent);mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent);}
+.avis-track{display:flex;gap:20px;width:max-content;animation:scroll-left 46s linear infinite;}
+.avis-track:hover{animation-play-state:paused;}
+.avis-card{
+  width:340px;flex-shrink:0;background:var(--white);border:1px solid var(--line);border-radius:var(--radius-m);
+  padding:28px;display:flex;flex-direction:column;gap:16px;
+}
+.avis-stars{display:flex;gap:3px;color:var(--bright);}
+.avis-stars svg{width:15px;height:15px;}
+.avis-card p{font-size:14.5px;color:var(--text);line-height:1.65;}
+.avis-who{display:flex;align-items:center;gap:12px;margin-top:auto;padding-top:6px;}
+.avis-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--green),var(--green-2));color:var(--bright-2);display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-weight:600;font-size:12.5px;}
+.avis-who .name{font-weight:600;font-size:13.5px;}
+.avis-who .role{font-size:12px;color:var(--text-mute);}
+
+/* ============ PRICING ============ */
+.tarifs{padding:130px 0 110px;}
+.price-toggle{display:inline-flex;align-items:center;background:var(--paper-2);border:1px solid var(--line);border-radius:100px;padding:5px;gap:2px;margin-bottom:50px;}
+.price-toggle button{padding:10px 22px;border-radius:100px;font-size:13.5px;font-weight:600;color:var(--text-soft);transition:all .3s var(--ease);position:relative;}
+.price-toggle button.active{background:var(--ink);color:var(--white);}
+.price-toggle .save{font-family:var(--font-mono);font-size:10px;background:var(--bright);color:var(--ink);padding:2px 6px;border-radius:8px;margin-left:6px;vertical-align:2px;}
+.price-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;}
+@media(max-width:980px){.price-grid{grid-template-columns:1fr 1fr;}}
+@media(max-width:600px){.price-grid{grid-template-columns:1fr;}}
+.price-card{
+  background:var(--white);border:1px solid var(--line);border-radius:var(--radius-m);padding:30px 26px;
+  display:flex;flex-direction:column;position:relative;transition:transform .4s var(--ease), box-shadow .4s var(--ease);
+}
+.price-card:hover{transform:translateY(-6px);box-shadow:0 26px 54px -26px rgba(10,30,22,.22);}
+.price-card.hi{background:linear-gradient(165deg,var(--green) 0%, var(--ink-3) 100%);color:var(--white);border-color:transparent;transform:scale(1.035);box-shadow:0 30px 60px -22px rgba(14,68,50,.45);}
+.price-card.hi:hover{transform:scale(1.035) translateY(-6px);}
+.price-badge{position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:var(--bright);color:var(--ink);font-family:var(--font-mono);font-size:10.5px;font-weight:700;padding:5px 14px;border-radius:20px;letter-spacing:.05em;white-space:nowrap;}
+.price-name{font-family:var(--font-mono);font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-mute);}
+.price-card.hi .price-name{color:rgba(255,255,255,.6);}
+.price-amount{font-family:var(--font-display);font-weight:700;font-size:36px;margin-top:12px;display:flex;align-items:baseline;gap:5px;}
+.price-amount span{font-family:var(--font-body);font-weight:500;font-size:13.5px;color:var(--text-mute);}
+.price-card.hi .price-amount span{color:rgba(255,255,255,.6);}
+.price-period{font-family:var(--font-mono);font-size:11.5px;color:var(--text-mute);margin-top:4px;}
+.price-card.hi .price-period{color:rgba(255,255,255,.55);}
+.price-feats{margin-top:24px;display:flex;flex-direction:column;gap:12px;flex:1;}
+.price-feats li{display:flex;gap:9px;font-size:13.5px;align-items:flex-start;}
+.price-feats svg{width:16px;height:16px;color:var(--green-2);flex-shrink:0;margin-top:2px;}
+.price-card.hi .price-feats svg{color:var(--bright);}
+.price-card .btn{margin-top:26px;width:100%;}
+
+.trial-banner{
+  margin-top:56px;padding:26px 32px;border-radius:var(--radius-m);background:var(--paper-2);border:1px dashed var(--line);
+  display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;
+}
+.trial-banner .l{display:flex;align-items:center;gap:16px;}
+.trial-banner .ic{width:44px;height:44px;border-radius:12px;background:var(--white);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--green-2);flex-shrink:0;}
+.trial-banner .ic svg{width:22px;height:22px;}
+.trial-banner h4{font-family:var(--font-display);font-weight:600;font-size:16.5px;}
+.trial-banner p{font-size:13.5px;color:var(--text-soft);margin-top:2px;}
+
+/* ============ FAQ ============ */
+.faq{padding:120px 0;}
+.faq-layout{display:grid;grid-template-columns:.7fr 1.3fr;gap:60px;}
+@media(max-width:860px){.faq-layout{grid-template-columns:1fr;gap:30px;}}
+.faq-tabs{display:flex;flex-direction:column;gap:8px;position:sticky;top:110px;align-self:start;}
+@media(max-width:860px){.faq-tabs{flex-direction:row;flex-wrap:wrap;position:static;}}
+.faq-tabs button{
+  text-align:left;padding:12px 16px;border-radius:12px;font-size:14px;font-weight:500;color:var(--text-soft);
+  transition:all .25s ease;border:1px solid transparent;
+}
+.faq-tabs button.active{background:var(--white);border-color:var(--line);color:var(--text);font-weight:600;box-shadow:0 8px 18px -12px rgba(10,30,22,.2);}
+.faq-item{border-bottom:1px solid var(--line);}
+.faq-item:first-child{border-top:1px solid var(--line);}
+.faq-q{
+  width:100%;display:flex;align-items:center;justify-content:space-between;gap:20px;
+  padding:22px 4px;font-family:var(--font-display);font-weight:500;font-size:16px;text-align:left;color:var(--text);
+}
+.faq-q .plus{width:22px;height:22px;border-radius:50%;border:1px solid var(--line);flex-shrink:0;position:relative;transition:transform .35s var(--ease), background .3s ease, border-color .3s ease;}
+.faq-q .plus::before,.faq-q .plus::after{content:'';position:absolute;background:var(--text-soft);transition:transform .3s ease, background .3s ease;}
+.faq-q .plus::before{top:50%;left:5px;right:5px;height:1.4px;transform:translateY(-50%);}
+.faq-q .plus::after{left:50%;top:5px;bottom:5px;width:1.4px;transform:translateX(-50%);}
+.faq-item.open .plus{background:var(--ink);border-color:var(--ink);}
+.faq-item.open .plus::before,.faq-item.open .plus::after{background:var(--white);}
+.faq-item.open .plus::after{transform:translateX(-50%) scaleY(0);}
+.faq-ans{max-height:0;overflow:hidden;transition:max-height .45s var(--ease);}
+.faq-ans-in{padding:0 4px 24px;color:var(--text-soft);font-size:14.5px;line-height:1.7;max-width:560px;}
+.faq-item[data-cat]{display:none;}
+.faq-item.show{display:block;}
+
+/* ============ CTA FINAL ============ */
+.cta-final{padding:0 0 120px;}
+.cta-panel{
+  position:relative;border-radius:var(--radius-l);overflow:hidden;padding:90px 40px;text-align:center;
+  background:linear-gradient(160deg,var(--green) 0%, var(--ink) 75%);color:var(--white);
+}
+.cta-panel::before{
+  content:'';position:absolute;top:-140px;left:50%;transform:translateX(-50%);width:600px;height:600px;border-radius:50%;
+  background:radial-gradient(circle,rgba(52,211,153,.35),transparent 65%);
+}
+.cta-panel .eyebrow{color:var(--bright-2);justify-content:center;}
+.cta-panel .eyebrow::before{background:var(--bright-2);}
+.cta-panel h2{font-family:var(--font-display);font-weight:700;font-size:clamp(30px,4.4vw,48px);letter-spacing:-.02em;margin-top:18px;max-width:640px;margin-left:auto;margin-right:auto;line-height:1.15;position:relative;}
+.cta-panel p{margin-top:16px;color:rgba(255,255,255,.68);font-size:16.5px;position:relative;}
+.cta-panel .hero-actions{justify-content:center;position:relative;margin-top:34px;}
+
+/* ============ FOOTER ============ */
+footer{background:var(--ink);color:rgba(255,255,255,.65);padding:80px 0 30px;}
+.foot-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:40px;padding-bottom:56px;border-bottom:1px solid rgba(255,255,255,.1);}
+@media(max-width:760px){.foot-grid{grid-template-columns:1fr 1fr;}}
+@media(max-width:480px){.foot-grid{grid-template-columns:1fr;}}
+.foot-brand .logo{color:var(--white);}
+.foot-brand p{margin-top:16px;font-size:14px;line-height:1.6;max-width:260px;color:rgba(255,255,255,.5);}
+.foot-social{display:flex;gap:10px;margin-top:22px;}
+.foot-social a{width:36px;height:36px;border-radius:50%;border:1px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;transition:all .3s ease;}
+.foot-social a:hover{background:var(--bright);border-color:var(--bright);color:var(--ink);}
+.foot-social svg{width:16px;height:16px;}
+.foot-col h5{font-family:var(--font-mono);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:18px;}
+.foot-col ul{display:flex;flex-direction:column;gap:12px;}
+.foot-col a{font-size:14.5px;transition:color .25s ease;}
+.foot-col a:hover{color:var(--white);}
+.foot-bottom{display:flex;align-items:center;justify-content:space-between;padding-top:26px;font-size:13px;color:rgba(255,255,255,.4);flex-wrap:wrap;gap:12px;}
+.foot-bottom .legal{display:flex;gap:22px;}
+
+/* count up helper */
+[data-count]{font-variant-numeric:tabular-nums;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="nav-inner">
+    <a href="#" class="logo">
+      <span class="logo-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6"/></svg></span>
+      BTP Devis Pro
+    </a>
+    <nav class="nav-links">
+      <a href="#fonctionnalites">Fonctionnalités</a>
+      <a href="#pourquoi">Pourquoi nous</a>
+      <a href="#demo">Démonstration</a>
+      <a href="#tarifs">Tarifs</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <div class="nav-cta">
+      <a href="https://btp-devis-pro-1.onrender.com/" class="nav-login">Se connecter</a>
+      <a href="https://btp-devis-pro-1.onrender.com/register.html" class="btn btn-primary btn-sm">Essai gratuit</a>
+    </div>
+    <button class="burger" id="burger" aria-label="Menu"><span></span></button>
+  </div>
+</header>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#fonctionnalites">Fonctionnalités</a>
+  <a href="#pourquoi">Pourquoi nous</a>
+  <a href="#demo">Démonstration</a>
+  <a href="#tarifs">Tarifs</a>
+  <a href="#faq">FAQ</a>
+  <a href="https://btp-devis-pro-1.onrender.com/register.html" class="btn btn-primary">Essai gratuit — 14 jours</a>
+</div>
+
+<!-- ============ HERO ============ -->
+<section class="hero grid-bg">
+  <div class="wrap hero-grid">
+    <div class="hero-copy">
+      <span class="eyebrow">Conçu pour le BTP au Bénin</span>
+      <h1>Le chantier avance. <br>Le papier suit <em>enfin</em> le rythme.</h1>
+      <p>Devis chiffrés en quelques minutes, situations de travaux suivies au franc près, factures normalisées DGI en un clic — tout le suivi administratif de vos chantiers dans un seul outil.</p>
+      <div class="hero-actions">
+        <a href="https://btp-devis-pro-1.onrender.com/register.html" class="btn btn-primary">Essayer gratuitement
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+        <a href="#demo" class="btn btn-ghost">Voir la démonstration</a>
+      </div>
+      <div class="hero-foot"><span class="dot"></span> Facturation normalisée e‑MCF / DGI incluse dès l'offre Starter</div>
+    </div>
+
+    <div class="mock-shell reveal">
+      <div class="mock-card bracket in-view">
+        <div class="mock-topbar">
+          <div class="mock-dots"><span></span><span></span><span></span></div>
+          <span class="tag">BROUILLON</span>
+        </div>
+        <div class="mock-body">
+          <div class="mock-title">Chantier Résidence Fifadji</div>
+          <div class="mock-sub">SARL Kponou Construction · IFU 3202•••041</div>
+          <div class="mock-lines" id="mockLines">
+            <div class="mock-line"><span class="desig">Fondation — béton armé</span><span class="qty">15 m³</span><span class="price">1 275 000</span></div>
+            <div class="mock-line"><span class="desig">Maçonnerie agglos 15</span><span class="qty">240 m²</span><span class="price">1 680 000</span></div>
+            <div class="mock-line"><span class="desig">Charpente &amp; couverture</span><span class="qty">1 ens.</span><span class="price">2 350 000</span></div>
+            <div class="mock-line"><span class="desig">Main-d'œuvre (20%)</span><span class="qty">—</span><span class="price">1 061 000</span></div>
+          </div>
+          <div class="mock-total">
+            <span class="lbl">Total TTC</span>
+            <span class="val"><span data-count="6366000">0</span> F</span>
+          </div>
+        </div>
+      </div>
+      <div class="mock-float mock-float-1">
+        <div class="qr"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <div>NIM généré<br>Code MECeF ✓</div>
+      </div>
+      <div class="mock-float mock-float-2">
+        <span class="ic"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg></span>
+        Devis validé
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TRUST ============ -->
+<section class="trust">
+  <p class="trust-label">Utilisé chaque jour par des professionnels du bâtiment</p>
+  <div class="marquee">
+    <div class="marquee-track" id="marqueeTrack">
+      <!-- duplicated via JS -->
+    </div>
+  </div>
+</section>
+
+<!-- ============ FEATURES ============ -->
+<section class="features grid-bg" id="fonctionnalites">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">L'outillage du bureau</span>
+      <h2>Une fonctionnalité pour chaque étape du chantier</h2>
+      <p>Projets, clients, devis, facturation, paiements, archives — sans jongler entre trois outils différents.</p>
+    </div>
+    <div class="feat-grid reveal-stagger" id="featGrid">
+      <div class="feat-card bracket">
+        <span class="feat-num">01</span>
+        <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 3v5h5M6 3h8l5 5v13H6z"/><path d="M9 13h6M9 17h6"/></svg></div>
+        <h3>Devis chiffrés</h3>
+        <p>Articles, quantités et prix unitaires ; calcul automatique de la main-d'œuvre et du total. Du brouillon au devis validé.</p>
+      </div>
+      <div class="feat-card bracket">
+        <span class="feat-num">02</span>
+        <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10"/></svg></div>
+        <h3>Situations de travaux</h3>
+        <p>Répartissez le montant du devis en plusieurs situations et suivez le reste à payer, mis à jour automatiquement.</p>
+      </div>
+      <div class="feat-card bracket">
+        <span class="feat-num">03</span>
+        <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="6" height="6"/><rect x="14" y="4" width="6" height="6"/><rect x="4" y="14" width="6" height="6"/><path d="M14 14h2v2h-2zM18 14h2v2h-2zM14 18h2v2h-2zM18 18h2v2h-2z"/></svg></div>
+        <h3>Facturation normalisée DGI</h3>
+        <p>Émission e‑MCF : NIM, Code MECeF et QR Code générés automatiquement sur chaque facture conforme.</p>
+      </div>
+      <div class="feat-card bracket">
+        <span class="feat-num">04</span>
+        <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6"/></svg></div>
+        <h3>Suivi de chantiers</h3>
+        <p>Statut, dates de début et fin, progression visuelle — un coup d'œil suffit pour savoir où en est chaque chantier.</p>
+      </div>
+      <div class="feat-card bracket">
+        <span class="feat-num">05</span>
+        <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M16 4.2c1.8.5 3 2.1 3 4s-1.2 3.5-3 4M22 20c0-2.6-1.8-4.8-4.2-5.6"/></svg></div>
+        <h3>Fiches clients</h3>
+        <p>Coordonnées, IFU et historique des devis pour chaque client, avec export Excel de toute la liste.</p>
+      </div>
+      <div class="feat-card bracket">
+        <span class="feat-num">06</span>
+        <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="5" rx="1"/><path d="M5 9v9a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9M10 13h4"/></svg></div>
+        <h3>Archivage</h3>
+        <p>Factures simples et normalisées : archivez-les d'un clic et restaurez-les à tout moment.</p>
+      </div>
+      <div class="feat-card bracket">
+        <span class="feat-num">07</span>
+        <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 0 0 18M8 12h.01M12 8h.01M16 12h.01M12 16h.01"/></svg></div>
+        <h3>Personnalisation</h3>
+        <p>Logo, en-tête et couleurs de vos PDF, régime TVA — l'outil s'adapte à l'image de votre entreprise.</p>
+      </div>
+      <div class="feat-card bracket">
+        <span class="feat-num">08</span>
+        <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/></svg></div>
+        <h3>Tableau de bord</h3>
+        <p>Chiffre d'affaires, devis validés et derniers devis créés, visibles dès la connexion.</p>
+      </div>
+      <div class="feat-card bracket">
+        <span class="feat-num">09</span>
+        <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 4 6v6c0 5 3.4 8.7 8 10 4.6-1.3 8-5 8-10V6z"/><path d="M9 12l2 2 4-4"/></svg></div>
+        <h3>Sauvegarde &amp; sécurité</h3>
+        <p>Export JSON complet de vos données, connexion sécurisée par JWT et mot de passe modifiable à tout moment.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DOCUMENTS SHOWCASE ============ -->
+<section class="docs" id="documents">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">À quoi ça ressemble</span>
+      <h2>Des documents qui donnent envie de signer</h2>
+      <p>Devis, facture simple, facture normalisée DGI — un même standard visuel, professionnel du premier au dernier envoi.</p>
+    </div>
+
+    <div class="docs-showcase reveal">
+      <div class="docs-side">
+        <div class="docs-tabs" id="docsTabs">
+          <button class="docs-tab active" data-doc="0">
+            <span class="dt-top"><span class="dt-num">01</span><span class="dt-name">Devis</span></span>
+            <span class="dt-desc">Chiffrage clair, calcul automatique de la main-d'œuvre, prêt à envoyer au client.</span>
+            <span class="dt-bar"><i></i></span>
+          </button>
+          <button class="docs-tab" data-doc="1">
+            <span class="dt-top"><span class="dt-num">02</span><span class="dt-name">Facture normalisée DGI</span></span>
+            <span class="dt-desc">NIM, Code MECeF et QR Code générés automatiquement, conformes à la réglementation.</span>
+            <span class="dt-bar"><i></i></span>
+          </button>
+          <button class="docs-tab" data-doc="2">
+            <span class="dt-top"><span class="dt-num">03</span><span class="dt-name">Facture simple</span></span>
+            <span class="dt-desc">Générée en un clic depuis un devis validé, avec statut de paiement suivi.</span>
+            <span class="dt-bar"><i></i></span>
+          </button>
+        </div>
+      </div>
+
+      <div class="docs-stage bracket in-view">
+        <div class="docs-toolbar">
+          <span class="docs-dots-mac"><i></i><i></i><i></i></span>
+          <span class="docs-filename" id="docsFilename">devisfact.png</span>
+          <span class="docs-tag-live" id="docsTagLive">Devis</span>
+        </div>
+        <div class="docs-frame" id="docsFrame">
+          <div class="docs-slide active" data-doc="0"><img src="devisfact.png" alt="Exemple de devis BTP Devis Pro" loading="lazy"></div>
+          <div class="docs-slide" data-doc="1"><img src="factnorm.png" alt="Exemple de facture normalisée DGI avec QR Code" loading="lazy"></div>
+          <div class="docs-slide" data-doc="2"><img src="factsp.png" alt="Exemple de facture simple" loading="lazy"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="docs-thumbs reveal">
+      <button class="docs-thumb active" data-doc="0"><img src="devisfact.png" alt="Miniature devis" loading="lazy"><span>Devis</span></button>
+      <button class="docs-thumb" data-doc="1"><img src="factnorm.png" alt="Miniature facture normalisée" loading="lazy"><span>Facture normalisée</span></button>
+      <button class="docs-thumb" data-doc="2"><img src="factsp.png" alt="Miniature facture simple" loading="lazy"><span>Facture simple</span></button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ WHY / COMPARISON ============ -->
+<section class="why grid-bg-dark" id="pourquoi">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">Avant / Après</span>
+      <h2>Ce qui change vraiment sur votre bureau</h2>
+      <p>Pas une promesse marketing : la manière concrète dont vos journées administratives se transforment.</p>
+    </div>
+    <div class="compare reveal">
+      <div class="compare-col compare-before">
+        <span class="compare-tag">Avant</span>
+        <h3>Le classeur Excel</h3>
+        <ul class="compare-list">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 6 6 18M6 6l12 12"/></svg> Calculs de main-d'œuvre refaits à la main, ligne oubliée, total faux</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 6 6 18M6 6l12 12"/></svg> Devis qui changent de mise en page à chaque nouveau client</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 6 6 18M6 6l12 12"/></svg> Aucune visibilité claire sur le reste à payer par chantier</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 6 6 18M6 6l12 12"/></svg> Contrôle fiscal synonyme de stress et de justificatifs à retrouver</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 6 6 18M6 6l12 12"/></svg> Données éparpillées entre plusieurs fichiers et ordinateurs</li>
+        </ul>
+      </div>
+      <div class="compare-col compare-after">
+        <span class="compare-tag">Avec BTP Devis Pro</span>
+        <h3>Un outil, un flux</h3>
+        <ul class="compare-list">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6 9 17l-5-5"/></svg> Sous-total, main-d'œuvre et total TTC calculés instantanément</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6 9 17l-5-5"/></svg> PDF professionnel, identique et fiable, à votre logo à chaque envoi</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6 9 17l-5-5"/></svg> Situations de travaux suivies au franc près, en temps réel</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6 9 17l-5-5"/></svg> Facture normalisée DGI avec QR Code, générée en un clic</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6 9 17l-5-5"/></svg> Tout centralisé, exportable et sauvegardable à tout moment</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DEMO ============ -->
+<section class="demo grid-bg" id="demo">
+  <div class="wrap demo-grid">
+    <div class="demo-video-wrap reveal">
+      <video class="demo-video" id="demoVideo" controls playsinline preload="metadata">
+        <source src="mon-macbook-presentation.mp4" type="video/mp4">
+        Votre navigateur ne prend pas en charge la lecture vidéo.
+      </video>
+    </div>
+
+    <div class="demo-copy reveal">
+      <span class="eyebrow">Démonstration</span>
+      <h2 style="font-family:var(--font-display);font-weight:700;font-size:clamp(28px,3.6vw,38px);margin-top:14px;letter-spacing:-.02em;line-height:1.15;">Voyez le cycle complet en moins d'une minute</h2>
+      <p style="margin-top:16px;color:var(--text-soft);font-size:16px;line-height:1.65;max-width:460px;">Pas besoin d'un tutoriel de 15 minutes : ce teaser montre l'essentiel, du premier article du devis jusqu'au PDF téléchargé.</p>
+      <ul class="demo-check">
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg> Création de devis</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg> Facturation</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg> Gestion des situations</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg> Export PDF</li>
+      </ul>
+      <div class="demo-actions">
+        <button class="btn btn-primary" id="demoPlayBtn">Regarder la démonstration
+          <svg viewBox="0 0 24 24" fill="currentColor" width="13" height="13"><path d="M8 5v14l11-7z"/></svg>
+        </button>
+        <a href="videos.html" class="btn btn-ghost">Voir tous les tutoriels</a>
+      </div>
+      <div class="stats">
+        <div class="stat"><b data-count="150" data-suffix="+">0</b><span>ENTREPRISES ACTIVES</span></div>
+        <div class="stat"><b data-count="98" data-suffix="%">0</b><span>TAUX DE SATISFACTION</span></div>
+        <div class="stat"><b data-count="14" data-suffix="j">0</b><span>ESSAI GRATUIT</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TESTIMONIALS ============ -->
+<section class="avis" id="temoignages">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">Sur le terrain</span>
+      <h2>Ce qu'en disent les équipes qui l'utilisent</h2>
+      <p>Chefs d'entreprise, artisans et gestionnaires — quelques retours parmi les plus fréquents.</p>
+    </div>
+  </div>
+  <div class="avis-track-wrap">
+    <div class="avis-track" id="avisTrack"></div>
+  </div>
+</section>
+
+<!-- ============ PRICING ============ -->
+<section class="tarifs grid-bg" id="tarifs">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">Sans engagement</span>
+      <h2>Une offre pour chaque taille de chantier</h2>
+      <p>14 jours d'essai gratuit avec toutes les fonctionnalités débloquées, sans carte bancaire.</p>
+    </div>
+
+    <div class="price-toggle reveal">
+      <button class="active" id="toggleMonthly">Mensuel</button>
+      <button id="toggleAnnual">Annuel <span class="save">-15%</span></button>
+    </div>
+
+    <div class="price-grid reveal-stagger">
+      <div class="price-card bracket">
+        <span class="price-name">Artisan 🛠️</span>
+        <div class="price-amount"><span class="pm-monthly">7 000</span><span class="pm-annual" style="display:none;">71 400</span><span>F CFA</span></div>
+        <div class="price-period pm-monthly">facturé chaque mois</div>
+        <div class="price-period pm-annual" style="display:none;">soit 5 950 F / mois</div>
+        <ul class="price-feats">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg> 5 clients</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg> 5 projets</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg> 10 devis</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M18 6 6 18M6 6l12 12"/></svg> Factures normalisées</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M18 6 6 18M6 6l12 12"/></svg> Export Excel</li>
+        </ul>
+        <a href="https://btp-devis-pro-1.onrender.com/" class="btn btn-ghost">Choisir Artisan</a>
+      </div>
+
+      <div class="price-card bracket">
+        <span class="price-name">Starter 🟢</span>
+        <div class="price-amount"><span class="pm-monthly">15 000</span><span class="pm-annual" style="display:none;">153 000</span><span>F CFA</span></div>
+        <div class="price-period pm-monthly">facturé chaque mois</div>
+        <div class="price-period pm-annual" style="display:none;">soit 12 750 F / mois</div>
+        <ul class="price-feats">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg> 10 clients</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg> 10 projets</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg> 20 devis</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg> Factures normalisées</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M18 6 6 18M6 6l12 12"/></svg> Export Excel</li>
+        </ul>
+        <a href="https://btp-devis-pro-1.onrender.com/" class="btn btn-ghost">Choisir Starter</a>
+      </div>
+
+      <div class="price-card hi bracket">
+        <span class="price-badge">Le plus choisi</span>
+        <span class="price-name">Pro 🔵</span>
+        <div class="price-amount"><span class="pm-monthly">30 000</span><span class="pm-annual" style="display:none;">306 000</span><span>F CFA</span></div>
+        <div class="price-period pm-monthly">facturé chaque mois</div>
+        <div class="price-period pm-annual" style="display:none;">soit 25 500 F / mois</div>
+        <ul class="price-feats">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg> Clients illimités</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg> Projets illimités</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg> Devis illimités</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg> Factures normalisées</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg> Export Excel</li>
+        </ul>
+        <a href="https://btp-devis-pro-1.onrender.com/" class="btn btn-primary">Choisir Pro</a>
+      </div>
+
+      <div class="price-card bracket">
+        <span class="price-name">Annuel 🔴</span>
+        <div class="price-amount">250 000<span>F CFA</span></div>
+        <div class="price-period">engagement 12 mois, prix fixe</div>
+        <ul class="price-feats">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg> Clients illimités</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg> Projets illimités</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg> Devis illimités</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg> Factures normalisées</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg> Export Excel</li>
+        </ul>
+        <a href="https://btp-devis-pro-1.onrender.com/" class="btn btn-ghost">Choisir Annuel</a>
+      </div>
+    </div>
+
+    <div class="trial-banner reveal">
+      <div class="l">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 4 6v6c0 5 3.4 8.7 8 10 4.6-1.3 8-5 8-10V6z"/></svg></span>
+        <div><h4>14 jours d'essai gratuit, sur toutes les offres</h4><p>Accès complet aux fonctionnalités, sans carte bancaire requise.</p></div>
+      </div>
+      <a href="https://btp-devis-pro-1.onrender.com/register.html" class="btn btn-ghost btn-sm">Démarrer l'essai</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section class="faq" id="faq">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">Questions fréquentes</span>
+      <h2>On répond à toutes vos questions</h2>
+      <p>Le reste des réponses se trouve dans le guide utilisateur, ou directement auprès de notre équipe.</p>
+    </div>
+
+    <div class="faq-layout">
+      <div class="faq-tabs reveal" id="faqTabs">
+        <button class="active" data-cat="all">Toutes</button>
+        <button data-cat="inscription">Inscription</button>
+        <button data-cat="abonnement">Abonnement</button>
+        <button data-cat="devis">Devis &amp; factures</button>
+        <button data-cat="technique">Technique</button>
+      </div>
+
+      <div class="faq-list reveal" id="faqList">
+        <div class="faq-item show" data-cat="inscription">
+          <button class="faq-q"><span>Comment créer un compte ?</span><span class="plus"></span></button>
+          <div class="faq-ans"><div class="faq-ans-in">Depuis la page d'inscription, renseignez votre nom, votre email, votre entreprise et un mot de passe. Un essai gratuit de 14 jours démarre automatiquement, sans carte bancaire.</div></div>
+        </div>
+        <div class="faq-item show" data-cat="inscription">
+          <button class="faq-q"><span>J'ai oublié mon mot de passe, que faire ?</span><span class="plus"></span></button>
+          <div class="faq-ans"><div class="faq-ans-in">Cliquez sur « Mot de passe oublié » depuis l'écran de connexion. Une demande est transmise à l'équipe support via WhatsApp, qui vous recontacte rapidement pour le réinitialiser.</div></div>
+        </div>
+        <div class="faq-item show" data-cat="abonnement">
+          <button class="faq-q"><span>Quelles offres sont disponibles ?</span><span class="plus"></span></button>
+          <div class="faq-ans"><div class="faq-ans-in">Quatre formules : Artisan, Starter, Pro et Annuel, qui se distinguent par le nombre de clients, projets et devis autorisés, ainsi que l'accès aux factures normalisées et à l'export Excel. Détails dans la section tarifs ci-dessus.</div></div>
+        </div>
+        <div class="faq-item show" data-cat="abonnement">
+          <button class="faq-q"><span>Que se passe-t-il si mon abonnement expire ?</span><span class="plus"></span></button>
+          <div class="faq-ans"><div class="faq-ans-in">Vous êtes averti plusieurs jours avant l'échéance. Passé ce délai sans renouvellement, la création de nouveaux clients, projets ou devis est bloquée, mais toutes vos données restent conservées et accessibles.</div></div>
+        </div>
+        <div class="faq-item show" data-cat="abonnement">
+          <button class="faq-q"><span>Quels moyens de paiement sont acceptés ?</span><span class="plus"></span></button>
+          <div class="faq-ans"><div class="faq-ans-in">Virement bancaire, Mobile Money (Moov, MTN) ou espèces sur rendez-vous. L'équipe vous accompagne pour finaliser le règlement selon votre offre.</div></div>
+        </div>
+        <div class="faq-item show" data-cat="devis">
+          <button class="faq-q"><span>Comment créer un devis ?</span><span class="plus"></span></button>
+          <div class="faq-ans"><div class="faq-ans-in">Depuis le menu Devis, choisissez « Nouveau devis », sélectionnez un client et un projet, ajoutez vos lignes d'articles avec quantité et prix unitaire, puis validez la création. Le calcul du total est automatique.</div></div>
+        </div>
+        <div class="faq-item show" data-cat="devis">
+          <button class="faq-q"><span>Puis-je modifier ou supprimer un devis ?</span><span class="plus"></span></button>
+          <div class="faq-ans"><div class="faq-ans-in">Oui, tant qu'il reste au statut brouillon. Une fois le devis validé, cette action devient irréversible et il ne peut plus être ni modifié ni supprimé.</div></div>
+        </div>
+        <div class="faq-item show" data-cat="devis">
+          <button class="faq-q"><span>Qu'est-ce qu'une facture normalisée DGI ?</span><span class="plus"></span></button>
+          <div class="faq-ans"><div class="faq-ans-in">C'est une facture conforme à la réglementation fiscale, émise via l'API e‑MCF. Elle comprend un NIM, un Code MECeF, un QR Code et un horodatage fiscal, et permet à vos clients de déduire la TVA.</div></div>
+        </div>
+        <div class="faq-item show" data-cat="devis">
+          <button class="faq-q"><span>Où renseigner mon NIF et l'IFU de mes clients ?</span><span class="plus"></span></button>
+          <div class="faq-ans"><div class="faq-ans-in">Votre NIF se configure une fois dans Paramètres → Fiscal. L'IFU de chaque client (13 caractères) se saisit sur sa fiche ou au moment de la normalisation d'une facture ; les deux sont indispensables à l'émission DGI.</div></div>
+        </div>
+        <div class="faq-item show" data-cat="technique">
+          <button class="faq-q"><span>Mes données sont-elles en sécurité ?</span><span class="plus"></span></button>
+          <div class="faq-ans"><div class="faq-ans-in">L'authentification repose sur des jetons JWT, les mots de passe sont hashés, les échanges sont chiffrés en HTTPS, et l'infrastructure applique des règles d'accès strictes sur chaque compte.</div></div>
+        </div>
+        <div class="faq-item show" data-cat="technique">
+          <button class="faq-q"><span>Puis-je sauvegarder et restaurer mes données ?</span><span class="plus"></span></button>
+          <div class="faq-ans"><div class="faq-ans-in">Oui, depuis Paramètres → Sauvegarde, téléchargez un export JSON complet (clients, projets, devis, factures, paramètres) et restaurez-le à tout moment sur votre compte.</div></div>
+        </div>
+        <div class="faq-item show" data-cat="technique">
+          <button class="faq-q"><span>L'application fonctionne-t-elle sur mobile ?</span><span class="plus"></span></button>
+          <div class="faq-ans"><div class="faq-ans-in">Oui, l'interface est entièrement responsive et s'utilise aussi bien sur ordinateur que sur tablette ou smartphone, sans installation particulière.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CTA FINAL ============ -->
+<section class="cta-final">
+  <div class="wrap">
+    <div class="cta-panel reveal">
+      <span class="eyebrow">Prêt quand vous l'êtes</span>
+      <h2>Votre premier devis en moins de 5 minutes</h2>
+      <p>14 jours d'essai gratuit, accès complet à toutes les fonctionnalités, sans engagement.</p>
+      <div class="hero-actions">
+        <a href="https://btp-devis-pro-1.onrender.com/register.html" class="btn btn-primary">Commencer gratuitement
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+        <a href="https://wa.me/2290151596397" class="btn btn-ghost-dark">Parler à un conseiller</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <a href="#" class="logo">
+          <span class="logo-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6"/></svg></span>
+          BTP Devis Pro
+        </a>
+        <p>Devis, situations de travaux et facturation normalisée DGI — pour les entreprises du BTP au Bénin.</p>
+        <div class="foot-social">
+          <a href="https://wa.me/2290151596397" aria-label="WhatsApp"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.1-1.7-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.8 1-.9 1.1-.2.2-.3.2-.6.1-.3-.1-1.2-.5-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6.1-.1.3-.3.4-.5.1-.1.2-.3.3-.5.1-.2 0-.4 0-.5C10.1 9 9.5 7.6 9.3 7c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.3.3-1 1-1 2.4s1 2.8 1.2 3c.1.2 2.1 3.2 5 4.4.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.2.2-1.4-.1-.1-.3-.2-.5-.3zM12 2a10 10 0 0 0-8.6 15.1L2 22l5.1-1.3A10 10 0 1 0 12 2z"/></svg></a>
+          <a href="mailto:devisbtp496@gmail.com" aria-label="Email"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></a>
+          <a href="#" aria-label="LinkedIn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9h4v12H3zM9 9h3.8v1.7h.05c.53-1 1.83-2 3.77-2 4.03 0 4.78 2.65 4.78 6.1V21h-4v-5.5c0-1.3-.02-3-1.83-3-1.83 0-2.1 1.43-2.1 2.9V21H9z"/></svg></a>
+        </div>
+      </div>
+      <div class="foot-col">
+        <h5>Produit</h5>
+        <ul>
+          <li><a href="#fonctionnalites">Fonctionnalités</a></li>
+          <li><a href="#tarifs">Tarifs</a></li>
+          <li><a href="#demo">Démonstration</a></li>
+          <li><a href="#faq">FAQ</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <h5>Ressources</h5>
+        <ul>
+          <li><a href="https://raw.githubusercontent.com/byl06/cv/main/BTP_Devis_Pro_Guide_Utilisateur%20(4).pdf">Guide utilisateur</a></li>
+          <li><a href="videos.html">Tutoriels vidéo</a></li>
+          <li><a href="https://btp-devis-pro-1.onrender.com/">Espace client</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <h5>Contact</h5>
+        <ul>
+          <li><a href="https://wa.me/2290151596397">WhatsApp</a></li>
+          <li><a href="mailto:devisbtp496@gmail.com">devisbtp496@gmail.com</a></li>
+          <li><a href="#">Lun–Ven · 8h–20h</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 BTP Devis Pro. Tous droits réservés.</span>
+      <div class="legal"><a href="#">Confidentialité</a><a href="#">Conditions</a></div>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ===== mobile menu =====
+const burger=document.getElementById('burger'), mobileMenu=document.getElementById('mobileMenu');
+burger.addEventListener('click',()=>{burger.classList.toggle('open');mobileMenu.classList.toggle('open');});
+mobileMenu.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{burger.classList.remove('open');mobileMenu.classList.remove('open');}));
+
+// ===== scroll reveal =====
+const io=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in-view'); } });
+},{threshold:.15});
+document.querySelectorAll('.reveal,.reveal-stagger,.bracket').forEach(el=>io.observe(el));
+
+// ===== feature card cursor glow =====
+document.querySelectorAll('.feat-card').forEach(card=>{
+  card.addEventListener('mousemove',e=>{
+    const r=card.getBoundingClientRect();
+    card.style.setProperty('--mx',(e.clientX-r.left)+'px');
+    card.style.setProperty('--my',(e.clientY-r.top)+'px');
+  });
+});
+
+// ===== documents showcase =====
+(function(){
+  const docsData=[
+    {file:'devisfact.png',tag:'Devis'},
+    {file:'factnorm.png',tag:'Facture normalisée'},
+    {file:'factsp.png',tag:'Facture simple'}
+  ];
+  const tabs=[...document.querySelectorAll('.docs-tab')];
+  const slides=[...document.querySelectorAll('.docs-slide')];
+  const thumbs=[...document.querySelectorAll('.docs-thumb')];
+  const filenameEl=document.getElementById('docsFilename');
+  const tagLiveEl=document.getElementById('docsTagLive');
+  let current=0, timer=null;
+  function goTo(i){
+    current=i;
+    tabs.forEach((t,k)=>{
+      t.classList.toggle('active',k===i);
+      const bar=t.querySelector('.dt-bar i');
+      bar.style.transition='none'; bar.style.width='0%';
+    });
+    slides.forEach((s,k)=>s.classList.toggle('active',k===i));
+    thumbs.forEach((th,k)=>th.classList.toggle('active',k===i));
+    filenameEl.textContent=docsData[i].file;
+    tagLiveEl.textContent=docsData[i].tag;
+    requestAnimationFrame(()=>{
+      requestAnimationFrame(()=>{
+        const activeBar=tabs[i].querySelector('.dt-bar i');
+        activeBar.style.transition='width 5s linear';
+        activeBar.style.width='100%';
+      });
+    });
+  }
+  function next(){ goTo((current+1)%docsData.length); }
+  function startAuto(){ clearInterval(timer); timer=setInterval(next,5000); }
+  tabs.forEach((t,i)=>t.addEventListener('click',()=>{ goTo(i); startAuto(); }));
+  thumbs.forEach((th,i)=>th.addEventListener('click',()=>{ goTo(i); startAuto(); }));
+  const stage=document.querySelector('.docs-stage');
+  if(stage){
+    stage.addEventListener('mouseenter',()=>clearInterval(timer));
+    stage.addEventListener('mouseleave',startAuto);
+  }
+  const docsIO=new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ goTo(0); startAuto(); docsIO.disconnect(); } });
+  },{threshold:.3});
+  const docsSection=document.getElementById('documents');
+  if(docsSection) docsIO.observe(docsSection);
+})();
+
+// ===== hero mock lines sequential reveal =====
+function playMockLines(){
+  const lines=document.querySelectorAll('#mockLines .mock-line');
+  lines.forEach((l,i)=>setTimeout(()=>l.classList.add('show'),350+i*260));
+}
+const mockIO=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{ if(e.isIntersecting){ playMockLines(); mockIO.disconnect(); } });
+},{threshold:.4});
+mockIO.observe(document.querySelector('.mock-shell'));
+
+// ===== count up =====
+function countUp(el){
+  const target=parseInt(el.getAttribute('data-count'),10);
+  const suffix=el.getAttribute('data-suffix')||'';
+  const dur=1400; const start=performance.now();
+  function step(t){
+    const p=Math.min((t-start)/dur,1);
+    const eased=1-Math.pow(1-p,3);
+    const val=Math.round(target*eased);
+    el.textContent=val.toLocaleString('fr-FR')+suffix;
+    if(p<1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+const countIO=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{ if(e.isIntersecting){ countUp(e.target); countIO.unobserve(e.target); } });
+},{threshold:.6});
+document.querySelectorAll('[data-count]').forEach(el=>countIO.observe(el));
+
+// ===== trust marquee content =====
+const marqueeItems=[
+  {label:'Entreprises',icon:'M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6'},
+  {label:'Artisans',icon:'M14.7 6.3a1 1 0 0 1 0 1.4l-6 6-3 1 1-3 6-6a1 1 0 0 1 1.4 0zM3 21h18'},
+  {label:'PME du BTP',icon:'M3 21h18M6 21V10l6-4 6 4v11M10 21v-5h4v5'},
+  {label:"Bureaux d'ingénierie",icon:'M12 2 2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5'},
+  {label:"Cabinets d'architecture",icon:'M4 21V9l8-6 8 6v12M9 21v-8h6v8'}
+];
+const track=document.getElementById('marqueeTrack');
+function renderMarquee(){
+  let html='';
+  for(let r=0;r<2;r++){
+    marqueeItems.forEach(it=>{
+      html+=`<div class="marquee-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${'<path d="'+it.icon+'"/>'}</svg>${it.label}</div>`;
+    });
+  }
+  track.innerHTML=html;
+}
+renderMarquee();
+
+// ===== testimonials =====
+const testimonials=[
+  {name:'Rachidi Kponou',role:'Gérant, SARL Kponou Construction',text:"Avant, on perdait toujours une ligne dans Excel. Maintenant tout est calculé automatiquement, main-d'œuvre comprise."},
+  {name:'Aïcha Houngbo',role:'Cheffe de projet, Atlas BTP',text:'Les situations de travaux ont changé notre relation avec les clients : ils voient exactement ce qui reste à payer.'},
+  {name:'Serge Dossou',role:'Comptable, Dossou &amp; Frères',text:'La facture normalisée avec le QR Code DGI sort en un clic. Ça nous a évité deux contrôles fiscaux compliqués.'},
+  {name:'Moussa Fanou',role:'Artisan maçon, indépendant',text:"Je gère plusieurs chantiers en même temps depuis le téléphone. Le tableau de bord me dit où on en est d'un coup d'œil."},
+  {name:'Estelle Lawson',role:'Gestionnaire, Lawson Bâtiment',text:"L'export Excel des devis me sert pour mon bilan de fin de mois. Ça me fait gagner une demi-journée de saisie."},
+  {name:'Paul Todjinou',role:'Fondateur, Todjinou Travaux',text:"Le support répond sur WhatsApp en quelques minutes. Pour une petite structure comme la nôtre, c'est rassurant."}
+];
+const avisTrack=document.getElementById('avisTrack');
+function initials(name){ return name.split(' ').map(w=>w[0]).join(''); }
+function starSvg(){ return '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.3L21 9l-4.9 4.3L17.5 20 12 16.7 6.5 20l1.4-6.7L3 9l6.1-.7z"/></svg>'; }
+let avisHtml='';
+for(let r=0;r<2;r++){
+  testimonials.forEach(t=>{
+    avisHtml+=`<div class="avis-card"><div class="avis-stars">${starSvg().repeat(5)}</div><p>${t.text}</p><div class="avis-who"><span class="avis-avatar">${initials(t.name)}</span><div><div class="name">${t.name}</div><div class="role">${t.role}</div></div></div></div>`;
+  });
+}
+avisTrack.innerHTML=avisHtml;
+
+// ===== pricing toggle =====
+const toggleMonthly=document.getElementById('toggleMonthly'), toggleAnnual=document.getElementById('toggleAnnual');
+function setPricing(isAnnual){
+  toggleMonthly.classList.toggle('active',!isAnnual);
+  toggleAnnual.classList.toggle('active',isAnnual);
+  document.querySelectorAll('.pm-monthly').forEach(el=>el.style.display=isAnnual?'none':'');
+  document.querySelectorAll('.pm-annual').forEach(el=>el.style.display=isAnnual?'':'none');
+}
+toggleMonthly.addEventListener('click',()=>setPricing(false));
+toggleAnnual.addEventListener('click',()=>setPricing(true));
+
+// ===== faq accordion + tabs =====
+document.querySelectorAll('.faq-q').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const item=btn.closest('.faq-item');
+    const ans=item.querySelector('.faq-ans');
+    const isOpen=item.classList.contains('open');
+    document.querySelectorAll('.faq-item.open').forEach(o=>{o.classList.remove('open');o.querySelector('.faq-ans').style.maxHeight=null;});
+    if(!isOpen){ item.classList.add('open'); ans.style.maxHeight=ans.scrollHeight+'px'; }
+  });
+});
+document.querySelectorAll('#faqTabs button').forEach(tab=>{
+  tab.addEventListener('click',()=>{
+    document.querySelectorAll('#faqTabs button').forEach(b=>b.classList.remove('active'));
+    tab.classList.add('active');
+    const cat=tab.getAttribute('data-cat');
+    document.querySelectorAll('.faq-item').forEach(item=>{
+      const show = cat==='all' || item.getAttribute('data-cat')===cat;
+      item.classList.toggle('show',show);
+    });
+  });
+});
+
+// ===== demo video =====
+const demoVideo=document.getElementById('demoVideo'), demoPlayBtn=document.getElementById('demoPlayBtn');
+demoPlayBtn.addEventListener('click',()=>{
+  document.getElementById('demo').scrollIntoView({behavior:'smooth',block:'center'});
+  demoVideo.play();
+});
+
+// nav shadow on scroll
+const navInner=document.querySelector('.nav-inner');
+window.addEventListener('scroll',()=>{
+  navInner.style.boxShadow = window.scrollY>10 ? '0 8px 30px -12px rgba(10,23,18,.25)' : '0 8px 30px -14px rgba(10,23,18,.15)';
+});
+</script>
+</body>
+</html>
